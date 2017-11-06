@@ -7,6 +7,7 @@ import hr.ExcepcionHR;
 import hr.HR;
 import hr.Job;
 import hr.Location;
+import hr.Region;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +31,7 @@ public class Prueba {
         borrarCountry();
         leerJobs();
         insertarLocation();
+        borrarLocation();
 
 
     }
@@ -117,4 +119,69 @@ public class Prueba {
         }
     }
     
+    public static void insertarRegion(){
+        try {
+            HR hr = new HR();
+            Region r = new Region();
+            r.setRegionId(6);
+            r.setRegionName("Torrelavega");
+            hr.insertarRegion(r);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorUsuario());
+        }
+       
+    }
+    
+    public static void borrarLocation(){
+        try {
+            HR hr = new HR();
+            hr.borrarLocation(1700);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorUsuario());
+        }
+    }
+
+    public static void modificarCountry(){
+        try {
+            HR h = new HR();          
+            Region r = new Region();
+            r.setRegionId(4);
+                     
+            Country c = new Country("DD","DAVID",r);
+            h.modificarCountry("DV", c);
+
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorUsuario());
+        }      
+    }
+    
+    public static void leerLocation(){
+        try { 
+            HR hr = new HR();
+            Location l = new Location();
+            l = hr.leerLocation(1000);
+            System.out.println(l.getLocationId()+" - "+l.getStreetAddress()+" - "+l.getPostalCode()
+            +" - "+l.getCity()+" - "+l.getStateProvince()+" - "+l.getCountry().getCountryId());
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMessage());
+        }
+       
+    }
+    
+    public static void leerLocations(){
+        try {
+            HR hr = new HR();
+            ArrayList<Location> locations = new ArrayList<>();
+            locations = hr.leerLocations();
+            
+            for(int i=0;i<locations.size();i++){
+                System.out.println(locations.get(i).getLocationId()+" - "+locations.get(i).getStreetAddress()+
+                " - "+locations.get(i).getPostalCode()+" - "+locations.get(i).getCity()+
+                " - "+locations.get(i).getStateProvince()+" - "+locations.get(i).getCountry().getCountryId());
+            }
+        } catch (ExcepcionHR ex) {
+            Logger.getLogger(Prueba.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
 }

@@ -36,8 +36,42 @@ public class HR {
         }
     }
     
-    public int insertarRegion(Region region) {
-        return 0;
+    /**
+     * Inserta una region a la base de datos.
+     * @author David Fernandez Garcia
+     * @param region Contiene la region a insertar en la base de datos.
+     * @return Cantidad de regiones que se han insertado en la base de datos.
+     * @throws ExcepcionHR ExcepcionHR con toda la informacion del errror producido.
+     */
+    public int insertarRegion(Region region) throws ExcepcionHR{
+        String dml = "";
+        int registrosAfectados = 0;
+        try {        
+            dml = "insert into regions(region_id,region_name) values(?,?)";
+            PreparedStatement sentencia = conexion.prepareStatement(dml);
+            sentencia.setInt(1, region.getRegionId());
+            sentencia.setString(2, region.getRegionName());
+            
+            registrosAfectados = sentencia.executeUpdate();
+
+            sentencia.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 1400:  
+                    excepcionHR.setMensajeErrorUsuario("El identificador del pais no puede ser nulo");
+                     break;
+                case 1:     
+                    excepcionHR.setMensajeErrorUsuario("El identificador del pais no puede repetirse.");
+                    break;
+                default:    
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador.");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     public int borrarRegion(int regionId) {
@@ -92,8 +126,53 @@ public class HR {
         }
         return registrosAfectados;    }
     
-    public int modificarCountry (String countryId, Country country){
-        return -1;
+    /**
+     * Modifica un pais de la base de datos
+     * @author David Fernandez Garcia
+     * @param countryId contiene el identificador del pais a modificar
+     * @param country contiene la nueva informacion del pais a modificar
+     * @return cantidad de paises modificados en la base de datos
+     * @throws ExcepcionHR con toda la informacion del errror producido
+     */
+    public int modificarCountry(String countryId,Country country) throws ExcepcionHR{
+        String llamada = "";
+        int registrosAfectados = 0;
+        try {
+            llamada = "call modificarCountry(?,?,?,?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            
+            sentenciaLlamable.setString(1, countryId);
+            sentenciaLlamable.setString(2, country.getCountryId());
+            sentenciaLlamable.setString(3, country.getCountryName());
+            sentenciaLlamable.setInt(4, country.getRegion().getRegionId());
+            
+            registrosAfectados = sentenciaLlamable.executeUpdate();
+            
+            sentenciaLlamable.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {      
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,llamada);
+            switch(ex.getErrorCode()){            
+                case 2292: 
+                        excepcionHR.setMensajeErrorUsuario("No se puede modificar el identificador, tiene localidades asociadas.");
+                    break;
+                case 2291:
+                        excepcionHR.setMensajeErrorUsuario("La region no existe");
+                    break;
+                case 1407:
+                        excepcionHR.setMensajeErrorUsuario("El identificador del pais no puede ser nulo");
+                    break;
+                case 1:
+                        excepcionHR.setMensajeErrorUsuario("El identificador de pais no puede repetirse");
+                    break;
+                default:    
+                        excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                    break;
+            }         
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     public Country leerCountry(String countryId){
@@ -152,20 +231,113 @@ public class HR {
         return registrosAfectados;
     }
     
-    public int borrarLocation (int locationId){
-        return -1;
+    /**
+     * Elimina una localidad de la base de datos
+     * @author David Fernandez Garcia
+     * @param locationId identificador de la localidad a eliminar de la base de datos.
+     * @return Cantidad de localidades borradas en la base de datos
+     * @throws ExcepcionHR con toda la informacion del errror producido.
+     */
+    public int borrarLocation(int locationId) throws ExcepcionHR{
+        String dml = "";
+        int registrosAfectados = 0;
+        try {
+            dml = "DELETE FROM LOCATIONS WHERE LOCATION_ID=?";    
+            PreparedStatement sentencia= conexion.prepareStatement(dml);
+            
+            sentencia.setInt(1, locationId);          
+            registrosAfectados = sentencia.executeUpdate();
+
+            sentencia.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 2292:  
+                    excepcionHR.setMensajeErrorUsuario("La localidad a borrar, tiene departamentos asociados.");
+                    break;
+                default:    
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     public int modificarLocation (int locationId, Location location){
         return -1;
     }
     
-    public Location leerLocation(int locationId){
-        return null;
+    /**
+     * Lee los datos de una localidad determinada
+     * @param locationId Identificador de la localidad a buscar
+     * @return Localidad con los datos obtenidos
+     * @throws ExcepcionHR con toda la informacion del errror producido.
+     */
+    public Location leerLocation(int locationId) throws ExcepcionHR{
+        Location location = new Location();
+        location.setCountry(new Country());
+        try {                
+            String dql = "SELECT * FROM LOCATIONS WHERE LOCATION_ID=?";
+            PreparedStatement sentencia= conexion.prepareStatement(dql);
+            sentencia.setInt(1, locationId);  
+            sentencia.executeQuery();
+            
+            ResultSet resultado = sentencia.executeQuery(dql);
+            while (resultado.next()) {
+                location.setLocationId(resultado.getInt("LOCATION_ID"));
+                location.setStreetAddress(resultado.getString("STREET_ADDRESS"));
+                location.setPostalCode(resultado.getString("POSTAL_CODE"));
+                location.setCity(resultado.getString("CITY"));
+                location.setStateProvince(resultado.getString("STATE_PROVINCE"));
+                location.getCountry().setCountryId(resultado.getString("COUNTRY_ID"));
+            }
+            
+            resultado.close();          
+            
+            sentencia.close();
+            conexion.close();   
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            throw excepcionHR;
+        }  
+        return location;
     }
     
-    public ArrayList<Location> leerLocations(){
-        return null;
+    /**
+     * Lee todas las localidades de la base de datos.
+     * @return Una lista con todas las localidades de la base de datos
+     * @throws ExcepcionHR con toda la informacion del errror producido.
+     */
+    public ArrayList<Location> leerLocations() throws ExcepcionHR{
+        ArrayList<Location> locations = new ArrayList();
+        try {      
+            Statement sentencia = conexion.createStatement();
+            String dql = "SELECT * FROM LOCATIONS";           
+            ResultSet resultado = sentencia.executeQuery(dql); 
+            while(resultado.next()){
+                Location location = new Location();
+                location.setCountry(new Country());
+                location.setLocationId(resultado.getInt("LOCATION_ID"));
+                location.setStreetAddress(resultado.getString("STREET_ADDRESS"));
+                location.setPostalCode(resultado.getString("POSTAL_CODE"));
+                location.setCity(resultado.getString("CITY"));
+                location.setStateProvince(resultado.getString("STATE_PROVINCE"));
+                location.getCountry().setCountryId(resultado.getString("COUNTRY_ID"));
+                locations.add(location);
+            }          
+            
+            resultado.close();                  
+            sentencia.close();
+            conexion.close();              
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            throw excepcionHR;
+        }         
+        return locations;
     }
     
     public int insertarDepartment(Department department){
