@@ -482,8 +482,35 @@ public class HR {
         return -1;
     }
     
-    public Job leerJob(String jobId){
-        return null;
+    /**
+     * Leer un registro de la tabla Job de la base de datos
+     * @author Adela Verdeja
+     * @param jobId contiene el identificado del trabajo a leer.
+     * @return devuelve un objeto de la clase Job
+     */
+    public Job leerJob(String jobId) {
+        Job j = new Job();
+        try {
+            String sql = "select * from jobs where job_id = ? ";
+            PreparedStatement sentencia = conexion.prepareStatement(sql);
+            sentencia.setString(1, jobId);
+            ResultSet resultado1 = sentencia.executeQuery();
+            while (resultado1.next()) {
+                j.setJobId(resultado1.getString("job_id"));
+                j.setJobTitle(resultado1.getString("job_title"));
+                j.setMinSalary(resultado1.getInt("min_salary"));
+                j.setMaxSalary(resultado1.getInt("max_salary"));
+                System.out.println(j);
+                
+            }
+            resultado1.close();
+            sentencia.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        }
+        
+        return j;
     }
     
     /**
@@ -528,8 +555,39 @@ public class HR {
         return -1;
     }
     
-    public int borrarJobHistory (int employeeId, Date startDate){
-        return -1;
+    /**
+     * Borra un ewgistro de la tabla JobHistory de la base de datos
+     *
+     * @author Adela Verdeja
+     * @param employeeId contienne el identificado del registro de jobHistory a
+     * modificar
+     * @param startDate contiene la fecha a borrar del registro de JobHistory
+     * @return cantidad de registros eliminados de JobHistory de la base de
+     * datos
+     *
+     */
+    public int BorrarJobHistory(int employeeId, java.sql.Date startDate) throws ExcepcionHR {
+        String llamada = "";
+        int registrosAfectados;
+        try {
+            llamada = "call BORRAR_JOB_HISTORY(?,?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable.setInt(1, employeeId);
+            sentenciaLlamable.setDate(2, startDate);
+            sentenciaLlamable.executeUpdate();
+            registrosAfectados = sentenciaLlamable.executeUpdate();
+            sentenciaLlamable.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(-1, ex.getMessage(), "Error general del sistema. Consulte con el administrador", llamada);
+            switch (ex.getErrorCode()) {
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     public int modificarJobHistory (int employeeId, Date startDate, JobHistory jobHistory){

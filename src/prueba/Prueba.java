@@ -26,12 +26,14 @@ public class Prueba {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        insertarEmployee();
-//        modificarDepartment();
+        insertarEmployee();
+        modificarDepartment();
         borrarCountry();
         leerJobs();
         insertarLocation();
         borrarLocation();
+//        borrarJobHistory();
+        leerJob();
 
 
     }
@@ -184,4 +186,27 @@ public class Prueba {
         }
         
     }
+    
+    public static void borrarJobHistory() throws ParseException{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date fechaUtil = sdf.parse("2017-11-06");
+        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
+        try {
+            HR hr = new HR();
+            hr.BorrarJobHistory(200, fechaSql);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+       }
+    
+}
+    
+    public static void leerJob(){
+        try {
+            HR hr = new HR();
+            hr.leerJob("IT_PROG");
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+    }
+    
 }
