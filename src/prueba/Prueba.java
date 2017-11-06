@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package prueba;
 
 import hr.Department;
@@ -26,29 +21,15 @@ public class Prueba {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws ParseException {
-        // TODO code application logic here
-//        Employee e = new Employee();
-//        e.setEmployeeId(114);
-//        Location l = new Location();
-//        l.setLocationId(1700);
-//        Department d = new Department(30,"Compras",e,l);
-//        HR hr = new HR();
-//        try {
-//            hr.modificarDepartment(30, d);
-//        } catch (ExcepcionHR ex) {
-//            System.out.println(ex);
-//        }
+    public static void main(String[] args) {
+//        insertarEmployee();
+//        modificarDepartment();
+        borrarCountry();
 
-//        HR hr = new HR();
-//        try {
-//            int x = hr.borrarCountry("US");
-//            System.out.println("Registros eliminados: " + x);
-//        } catch (ExcepcionHR ex) {
-//            System.out.println(ex.getMensajeErrorBD());
-//            System.out.println(ex.getMensajeErrorUsuario());
-//        }
 
+    }
+    
+    public static void insertarEmployee() {
         Employee manager = new Employee();
         manager.setEmployeeId(100);
         Department department = new Department();
@@ -56,9 +37,14 @@ public class Prueba {
         Job job = new Job();
         job.setJobId("IT_PROG");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        java.util.Date fechaUtil = sdf.parse("2017-10-19");
-        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
+        java.util.Date fechaUtil = null;
+        try {
+            fechaUtil = sdf.parse("2017-10-19");
+        } catch (ParseException ex) {
+           System.out.println(ex);
+        }
 
+        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
         Employee e = new Employee(549,null,"Ruiz","fghgfhgf","696121212",fechaSql, job,4500,0,manager,department);
         try {
             HR hr = new HR();
@@ -66,7 +52,30 @@ public class Prueba {
         } catch (ExcepcionHR ex) {
             System.out.println(ex);
         }
-
     }
     
+    public static void modificarDepartment() {
+        Employee e = new Employee();
+        e.setEmployeeId(114);
+        Location l = new Location();
+        l.setLocationId(1700);
+        Department d = new Department(30,"Compras",e,l);
+        try {
+            HR hr = new HR();
+            hr.modificarDepartment(30, d);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public static void borrarCountry() {
+        try {
+            HR hr = new HR();
+            int x = hr.borrarCountry("US");
+            System.out.println("Registros eliminados: " + x);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorBD());
+            System.out.println(ex.getMensajeErrorUsuario());
+        }
+    }
 }
