@@ -9,6 +9,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -103,8 +104,52 @@ public class HR {
         return null;
     }
     
-    public int insertarLocation(Location location){
-        return -1;
+    /**
+     * Inserta una localización enla base de datos
+     *
+     * @author Carlos Labrador Amieva
+     * @param location contiene todos los datos de la localización a añadir.
+     * @return cantidad de localizaciones insertadas en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha
+     * producido
+     */
+    public int insertarLocation(Location location) throws ExcepcionHR {
+        String llamada = "";
+        int registrosAfectados = 0;
+        try {
+            llamada = "INSERT INTO LOCATIONS(LOCATION_ID,STREET_ADDRESS,POSTAL_CODE,CITY,STATE_PROVINCE,COUNTRY_ID) VALUES (?,?,?,?,?,?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+
+            sentenciaLlamable.setInt(1, location.getLocationId());
+            sentenciaLlamable.setString(2, location.getStreetAddress());
+            sentenciaLlamable.setString(3, location.getPostalCode());
+            sentenciaLlamable.setString(4, location.getCity());
+            sentenciaLlamable.setString(5, location.getStateProvince());
+            sentenciaLlamable.setString(6, location.getCountry().getCountryId());
+            registrosAfectados = sentenciaLlamable.executeUpdate();
+
+            sentenciaLlamable.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            switch (ex.getErrorCode()) {
+                case 2291:
+                    excepcionHR.setMensajeErrorUsuario("El pais seleccionado no existe");
+                    break;
+                case 1400:
+                    excepcionHR.setMensajeErrorUsuario("Error: los siguientes datos son obligatorios:\nIdentificador de localidad.\nCiudad");
+                    break;
+                case 1:
+                    excepcionHR.setMensajeErrorUsuario("Error: el código de localidad no puede repetirse");
+                    break;
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     public int borrarLocation (int locationId){
@@ -269,8 +314,42 @@ public class HR {
         return null;
     }
     
-    public ArrayList<Job> leerJobs(){
-        return null;
+    /**
+     * Devuelve un ArrayList con todos los trabajos.
+     *
+     * @author Carlos Labrador
+     * @return ArrayList de Jobs con todos los trabajos en la base de datos.
+     * @throws ExcepcionHR con toda la información acerca del error que se ha
+     * producido
+     */
+    public ArrayList<Job> leerJobs() throws ExcepcionHR {
+         Job j = null;
+        String llamada = "";
+        ArrayList<Job> trabajos = new ArrayList();
+        try {
+            llamada = "select * from JOBS";
+            Statement sentencia = conexion.createStatement();
+            ResultSet rs = sentencia.executeQuery(llamada);
+            while (rs.next()) {
+                
+                j=new Job(rs.getString("JOB_ID"), rs.getString("JOB_TITLE"), rs.getInt("MIN_SALARY"), rs.getInt("MAX_SALARY"));
+                trabajos.add(j);
+            }
+            rs.close();
+            sentencia.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            switch (ex.getErrorCode()) {
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return trabajos;
+        
     }
 
     public int insertarJobHistory(JobHistory jobHistory){

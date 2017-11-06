@@ -1,5 +1,6 @@
 package prueba;
 
+import hr.Country;
 import hr.Department;
 import hr.Employee;
 import hr.ExcepcionHR;
@@ -9,7 +10,9 @@ import hr.Location;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +28,8 @@ public class Prueba {
 //        insertarEmployee();
 //        modificarDepartment();
         borrarCountry();
+        leerJobs();
+        insertarLocation();
 
 
     }
@@ -78,4 +83,38 @@ public class Prueba {
             System.out.println(ex.getMensajeErrorUsuario());
         }
     }
+
+    public static void insertarLocation() {
+        HR hr;
+        try {
+            hr = new HR();
+            Country c = new Country();
+            c.setCountryId("CU");
+            Location l = new Location(1701, "el alto quijas", "39590", "quijas", "cantabria", c);
+            hr.insertarLocation(l);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorBD());
+        }
+    }
+
+    public static void leerJobs() {
+        HR hr;
+        try {
+            hr = new HR();
+
+            ArrayList resultado = hr.leerJobs();
+            Iterator it = resultado.iterator();
+            System.out.println("Número de Trabajos: " + resultado.size());
+            while (it.hasNext()) {
+                Job j = (Job) it.next();
+                System.out.print("---- TRABAJO: ----\n" + j.getJobId() + "\n"
+                        + j.getJobTitle() + "\n"
+                        + "Salario minimo: " + j.getMinSalary() + "\n"
+                        + "Salario máximo: " + j.getMaxSalary() + "\n");
+            }
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex.getMensajeErrorBD());
+        }
+    }
+    
 }
