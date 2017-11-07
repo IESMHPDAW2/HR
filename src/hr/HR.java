@@ -74,24 +74,195 @@ public class HR {
         return registrosAfectados;
     }
     
-    public int borrarRegion(int regionId) {
-        return 0;
+    /**
+     * Elimina una region de la base de datos
+     * @author Ricardo Pérez Barreda
+     * @param regionId contiene el identificador de la región a eliminar
+     * @return cantidad de regiones eliminadas en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int borrarRegion(int regionId) throws ExcepcionHR {
+        String dml = null;
+        int registrosAfectados=0;
+        try {
+            
+            dml = "delete from REGIONS where REGION_ID=?";
+            try (PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml)) {
+                sentenciaPreparada.setString(1, regionId+"");
+                registrosAfectados=sentenciaPreparada.executeUpdate();
+                sentenciaPreparada.close();
+            }
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                case 2292:  excepcionHR.setMensajeErrorUsuario("No se puede eliminar esta region porque tiene paises asociados");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;    
     }
     
-    public int modificarRegion(int regionId, Region region) {
-        return 0;
+    /**
+     * Modifica la region que se le pase por parametro de la base de datos
+     * @author Jonathan León Lorenzo
+     * @param regionId contiene el identificador de la region a modificar
+     * @param region contiene el identificador y nombre de la nueva region
+     * @return Numero de registros afectados
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int modificarRegion(int regionId, Region region) throws ExcepcionHR {
+        String dml = null;
+        int registrosAfectados=0;
+        try {
+
+            Statement sentencia = conexion.createStatement();
+
+            dml = "update regions set REGION_ID="+region.getRegionId()+ ", REGION_NAME='"+region.getRegionName()+"' where REGION_ID="+regionId;
+            registrosAfectados = sentencia.executeUpdate(dml);
+
+            sentencia.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            switch (ex.getErrorCode()) {
+                
+                case 2292:
+                    excepcionHR.setMensajeErrorUsuario("No se puede modificar el codigo del continente mientras tenga paises asociados.");
+                    break;
+                case 1:
+                    excepcionHR.setMensajeErrorUsuario("No se puede modificar el código del continente porque el nuevo código está siendo utilizado por otro continente.");
+                    break;
+                
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador" + ex);
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
-    public Region leerRegion(int regionId) {
-        return null;
+    /**
+     * Muestra la region que se le pase por parametro de la base de datos
+     * @author Jonathan León Lorenzo
+     * @param regionId contiene el identificador de la region a buscar
+     * @return un objeto de tipo Region con el pais a mostrar.
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public Region leerRegion(int regionId) throws ExcepcionHR {
+        String llamada = "";
+        Region r=null;
+        try {
+            llamada = "select * from REGIONS where REGION_ID="+regionId;
+            Statement sentencia = conexion.createStatement();
+            
+            ResultSet resultado1 = sentencia.executeQuery(llamada);
+            while (resultado1.next()) {
+                r=new Region(resultado1.getInt("REGION_ID"),resultado1.getString("REGION_NAME"));
+            }
+            resultado1.close();
+            
+            
+            sentencia.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return r;
     }
     
-    public ArrayList<Region> leerRegions() {
-        return null;
+    
+    /**
+     * Muestra las regiones de la base de datos
+     * @author Jonathan León Lorenzo
+     * @return un ArrayList de tipo Region con los paises a mostrar.
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public ArrayList<Region> leerRegions() throws ExcepcionHR {
+        String llamada = "";
+        Region r=null;
+        ArrayList<Region> a= new ArrayList();
+        try {
+            llamada = "select * from REGIONS";
+            
+            Statement sentencia = conexion.createStatement();
+            
+            ResultSet resultado1 = sentencia.executeQuery(llamada);
+            while (resultado1.next()) {
+                r=new Region(resultado1.getInt("REGION_ID"),resultado1.getString("REGION_NAME"));
+                a.add(r);
+            }
+            resultado1.close();
+            
+            
+            sentencia.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return a;
     }
     
-    public int insertarCountry(Country country){
-        return -1;
+    /**
+     * Inserta un pais en la base de datos
+     * @author Ricardo Pérez Barreda
+     * @param country contiene el pais a insertar en la base de datos
+     * @return cantidad de paises insertados en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int insertarCountry(Country country) throws ExcepcionHR{
+        String dml="";
+        int registrosAfectados=0;
+        try {
+            dml = "INSERT INTO COUNTRIES"
+                    + "(COUNTRY_ID,COUNTRY_NAME,REGION_ID) "
+                    + "VALUES (?,?,?)";
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            
+            
+            
+            sentenciaPreparada.setString(1, country.getCountryId());
+            sentenciaPreparada.setString(2, country.getCountryName());
+            sentenciaPreparada.setInt(3, country.getRegion().getRegionId());
+            
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            
+            sentenciaPreparada.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 2291:  excepcionHR.setMensajeErrorUsuario("La región introducida no existe.");
+                            break;
+                case 1400:  excepcionHR.setMensajeErrorUsuario("El pais tiene que tener un código.");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("No puede haber mas de un pais con el mismo código.");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     /**
@@ -175,12 +346,68 @@ public class HR {
         return registrosAfectados;
     }
     
-    public Country leerCountry(String countryId){
-        return null;
+    /**
+     * Consulta todos los paises
+     * @author Ricardo Pérez Barreda
+     * @param countryId contiene el identificador del pais a consultar
+     * @return ccountry de la consulta generada
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public Country leerCountry(String countryId) throws ExcepcionHR{
+        String dml="";
+        Country country = null;
+
+         try {
+            dml = ("Select * from COUNTRIES where COUNTRY_ID = '"+countryId+"'") ;
+            Statement sentencia = conexion.createStatement();
+            ResultSet resultado = sentencia.executeQuery(dml); 
+            
+            while (resultado.next()) {
+                Region r = new Region(resultado.getInt("REGION_ID"),null);
+                country = new Country(resultado.getString("COUNTRY_ID"),resultado.getString("COUNTRY_NAME"),r);
+            }
+            resultado.close();
+         }
+            catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(),null,dml);
+            throw excepcionHR;
+            }
+        return country;
     }
     
-    public ArrayList<Country> leerCountrys(){
-        return null;
+    /**
+     * Leer los paises de la base de datos
+     * @author Daniel Portilla López
+     * @return devuvelve una lista con paises que hay en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public ArrayList<Country> leerCountrys() throws ExcepcionHR{
+        Country c = null;
+        Region r = null;
+        ArrayList<Country> lista=new ArrayList();
+        String llamada = "";   
+        try{
+            llamada = "select * from COUNTRIES";
+            Statement sentencia = conexion.createStatement();
+            ResultSet rs = sentencia.executeQuery(llamada);
+            while(rs.next()){
+                r = new Region();
+                r.setRegionId(rs.getInt("REGION_ID"));
+                c = new Country(rs.getString("COUNTRY_ID"),rs.getString("COUNTRY_NAME"),r);
+                lista.add(c);
+            }
+            rs.close();
+            sentencia.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return lista;
     }
     
     /**
@@ -266,8 +493,54 @@ public class HR {
         return registrosAfectados;
     }
     
-    public int modificarLocation (int locationId, Location location){
-        return -1;
+ /**
+ * Modifica una localidad de la base de datos
+ * @author Alberto Martínez - Pilar Sánchez
+ * @param locationId  contiene el identificador de la localidad a modificar
+ * @param location contiene los nuevos datos de la localidad a modificar
+ * @return cantidad de localidades modificadas en la base de datos
+ * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+ */
+
+    public int modificarLocation(int locationId,Location location) throws ExcepcionHR{
+        int registrosAfectados = 0;
+        String dml = "";
+        try {
+            Statement sentencia = conexion.createStatement();
+
+            dml = "update LOCATIONS set LOCATION_ID = ? , STREET_ADDRESS = ? , POSTAL_CODE = ? , CITY = ? ,STATE_PROVINCE = ? , COUNTRY_ID = ? where LOCATION_ID = ?";
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            
+            sentenciaPreparada.setInt(1, location.getLocationId());
+            sentenciaPreparada.setString(2, location.getStreetAddress());
+            sentenciaPreparada.setString(3, location.getPostalCode());
+            sentenciaPreparada.setString(4, location.getCity());
+            sentenciaPreparada.setString(5, location.getStateProvince());
+            sentenciaPreparada.setString(6, location.getCountry().getCountryId());
+            sentenciaPreparada.setInt(7, locationId);
+            
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            
+            sentenciaPreparada.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 2291:  excepcionHR.setMensajeErrorUsuario("El pais no existe");
+                            break;
+                case 1407:  excepcionHR.setMensajeErrorUsuario("El identificador y el nombre de la ciudad son obligatorios");
+                            break;
+                case 2292:  excepcionHR.setMensajeErrorUsuario("No se puede modificar el identificador de localidad ya que tiene departamentos asociados");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("El identificador de localidad ya existe");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     /**
@@ -340,12 +613,89 @@ public class HR {
         return locations;
     }
     
-    public int insertarDepartment(Department department){
-        return -1;
+    /**
+     * Metodo que añade un Department a la base de datos
+     * @param department Department a insertar en la base de datos
+     * @return numero de registros afectados
+     * @throws ExcepcionHR excepcion generada por la base de datos
+     */
+    public int insertarDepartment(Department department) throws ExcepcionHR {
+        String dml = "";
+        int registrosAfectados = -1;
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "kk");
+            Statement sentencia = conexion.createStatement();
+            dml = "insert into DEPARTMENTS (DEPARTMENT_ID, DEPARTMENT_NAME,MANAGER_ID,LOCATION_ID)"
+                    + " values(?,?,?,?)";
+
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+
+            sentenciaPreparada.setInt(1, department.getDepartmentId());
+            sentenciaPreparada.setString(2, department.getDepartmentName());
+            sentenciaPreparada.setInt(3, department.getManager().getEmployeeId());
+            sentenciaPreparada.setInt(4, department.getLocation().getLocationId());
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            sentencia.close();
+            conexion.close();
+
+        } catch (ClassNotFoundException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(0, ex.getMessage(), "Error - Clase no Encontrada: " + ex.getMessage(), dml);
+            throw excepcionHR;
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+                
+                case 1400:
+                    excepcionHR.setMensajeErrorUsuario("Error: los siguientes datos son obligatorios: Nombre del Departamento");
+                    break;
+                case 2291:
+                    excepcionHR.setMensajeErrorUsuario("Error: La localidad no existe o el empleado jefe no existe.");
+                    break;
+                case 1:
+                    excepcionHR.setMensajeErrorUsuario("Error: El ID del departamento no puede repetirse");
+                    break;
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
-    
-    public int borrarDepartment (int departmentId){
-        return -1;
+
+    /**
+     * Metodo que borra un Department de la base de datos
+     * @param departmentId identificador del departamento que vamos a eliminar
+     * @return numero de registros afectados
+     * @throws ExcepcionHR excepcion generada por la base de datos
+     */
+    public int borrarDepartment(int departmentId) throws ExcepcionHR {
+        String dml = null;
+        int registrosAfectados=-1;
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "kk");
+            Statement sentencia = conexion.createStatement();
+
+            dml = "delete from departments where DEPARTMENT_ID="+departmentId;
+            registrosAfectados = sentencia.executeUpdate(dml);
+            sentencia.close();
+            conexion.close();
+        } catch (ClassNotFoundException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(0, ex.getMessage(), "Error - Clase no Encontrada: " + ex.getMessage(), dml);
+            throw excepcionHR;
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+                case 2292:  excepcionHR.setMensajeErrorUsuario("Error: No se puede eliminar el departamento ya que tiene empleados o registros historicos");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     /**
@@ -392,12 +742,93 @@ public class HR {
         return registrosAfectados;
     }
     
-    public Department leerDepartment(int departmentId){
-        return null;
+    /**
+     * Metodo que obtiene de la base de datos un Department
+     * @param departmentId identificador del Department a obtener
+     * @return Department deseado
+     * @throws ExcepcionHR excepcion generada por la base de datos
+     */
+    public Department leerDepartment(int departmentId) throws ExcepcionHR {
+        Department d = new Department();
+        String dml = "";
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "kk");
+            Statement sentencia = conexion.createStatement();
+            dml = "select * from DEPARTMENTS where DEPARTMENT_ID = ?";
+
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+
+            sentenciaPreparada.setInt(1, departmentId);
+            ResultSet resultado=sentenciaPreparada.executeQuery();
+            d.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
+            d.setDepartmentName(resultado.getString("DEPARTMENT_NAME"));
+            Location l= new Location();
+            l.setLocationId(resultado.getInt("LOCATION_ID"));
+            d.setLocation(l);
+            Employee e = new Employee();
+            e.setEmployeeId(resultado.getInt("MANAGER_ID"));
+            d.setManager(e);
+            sentencia.close();
+            conexion.close();
+
+        } catch (ClassNotFoundException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(0, ex.getMessage(), "Error - Clase no Encontrada: " + ex.getMessage(), dml);
+            throw excepcionHR;
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return d;
     }
-    
-    public ArrayList<Department> leerDepartments(){
-        return null;
+
+    /**
+     * Metodo que obtiene todos los Department de la base de datos
+     * @return todos los Departament de la base de datos
+     * @throws ExcepcionHR excepcion generada por la base de datos
+     */
+    public ArrayList<Department> leerDepartments() throws ExcepcionHR {
+        ArrayList<Department> solucion = new ArrayList<Department>();
+        String dml = "";
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "kk");
+            Statement sentencia = conexion.createStatement();
+            dml = "select * from DEPARTMENTS";
+            ResultSet resultados= sentencia.executeQuery(dml);
+            while(resultados.next()){
+                Department d = new Department();
+                d.setDepartmentId(resultados.getInt("DEPARTMENT_ID"));
+                d.setDepartmentName(resultados.getString("DEPARTMENT_NAME"));
+                Location l= new Location();
+                l.setLocationId(resultados.getInt("LOCATION_ID"));
+                d.setLocation(l);
+                Employee e = new Employee();
+                e.setEmployeeId(resultados.getInt("MANAGER_ID"));
+                d.setManager(e);
+                solucion.add(d);
+            }
+            sentencia.close();
+            conexion.close();
+
+        } catch (ClassNotFoundException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(0, ex.getMessage(), "Error - Clase no Encontrada: " + ex.getMessage(), dml);
+            throw excepcionHR;
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return solucion;
     }
 
     /**
@@ -454,32 +885,288 @@ public class HR {
         return registrosAfectados;
     }
     
-    public int borrarEmployee (int employeeId){
-        return -1;
+    /**
+     * Elimina un empleado de la base de datos
+     * @author Jonathan León Lorenzo
+     * @param employeeId contiene el identificador de la region a eliminar
+     * @return cantidad de empleados insertados en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int borrarEmployee (int employeeId) throws ExcepcionHR{
+        String llamada = "";
+        int registrosAfectados=0;
+        try {
+            llamada = "call BORRAR_EMPLOYEE(?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            
+            sentenciaLlamable.setInt(1, employeeId);
+            registrosAfectados=sentenciaLlamable.executeUpdate();
+            
+            sentenciaLlamable.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                case 2292:  excepcionHR.setMensajeErrorUsuario("No se puede borrar porque tiene un historial asociado");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;  
     }
     
-    public int modificarEmployee (int employeeId, Employee employee){
-        return -1;
+    /**
+     * Modifica un empleado de la base de datos
+     * @author Ricardo Pérez Barreda
+     * @param employeeId contiene el identificador del empleado a modificar
+     * @param employee contiene la nuevos datos del empleado a modificar
+     * @return cantidad de empleados modificados en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int modificarEmployee (int employeeId, Employee employee) throws ExcepcionHR{
+        int registrosAfectados = 0;
+        String dml = "";
+        try {
+            Statement sentencia = conexion.createStatement();
+
+            dml = "update EMPLOYEES set "
+                    + "EMPLOYEE_ID = "      + employee.getEmployeeId() + ","
+                    + "FIRST_NAME = '"      + employee.getFirstName() + "',"
+                    + "LAST_NAME = '"       + employee.getLastName() + "',"
+                    + "EMAIL = '"           + employee.getEmail() + "',"
+                    + "PHONE_NUMBER = '"    + employee.getPhoneNumber() + "',"
+                    + "HIRE_DATE = '"        + employee.getHireDate() + "',"
+                    + "JOB_ID = '"          + employee.getJob().getJobId() + "',"
+                    + "SALARY = "           + employee.getSalary() + ","
+                    + "COMMISSION_PCT = "   + employee.getCommissionPct() + ","
+                    + "MANAGER_ID = "       + employee.getManager().getEmployeeId() + ","
+                    + "DEPARTMENT_ID = "    + employee.getDepartment().getDepartmentId() + " " 
+                    + "where EMPLOYEE_ID = "+ employeeId ;
+            registrosAfectados = sentencia.executeUpdate(dml);
+            
+            sentencia.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 2291:  excepcionHR.setMensajeErrorUsuario("El jefe de empleado, el trabajo o el departamento seleccionado no existen");
+                            break;
+                case 1407:  excepcionHR.setMensajeErrorUsuario("Los campos: Identificador de empleado, Email, Fecha de contratación, "
+                        + "Apellido y Trabajo son obligatorios");
+                            break;
+                case 2290:  excepcionHR.setMensajeErrorUsuario("El salario no puede ser menor o igual que 0");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("Tanto el Email como el Identificador de empleado no pueden repetirse");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
-    public Employee leerEmployee(int employeeId){
-        return null;
+    /**
+ * Lee un empleado de la base de datos
+ * @author Alberto Martínez - Pilar Sánchez
+ * @param employeeId  contiene el identificador del empleado a leer
+ * @return empleado que coincide con el identificador pasado
+ * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+ */
+
+    public Employee leerEmployee(int employeeId) throws ExcepcionHR{
+        String dql="";
+        Employee e=new Employee();
+        try {
+            Job j=new Job();
+            Employee m=new Employee();
+            Department d=new Department();
+            dql = "SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID= ?";
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.setInt(1, employeeId);
+            ResultSet resultado = sentenciaPreparada.executeQuery();
+            while(resultado.next()){
+                e.setEmployeeId(resultado.getInt(1));
+                e.setFirstName(resultado.getString(2));
+                e.setLastName(resultado.getString(3));
+                e.setEmail(resultado.getString(4));
+                e.setPhoneNumber(resultado.getString(5));
+                e.setHireDate(resultado.getDate(6));
+                j.setJobId(resultado.getString(7));
+                e.setJob(j);
+                e.setSalary(resultado.getDouble(8));
+                e.setCommissionPct(resultado.getDouble(9));
+                m.setEmployeeId(resultado.getInt(10));
+                e.setManager(m);
+                d.setDepartmentId(resultado.getInt(11));
+                e.setDepartment(d);
+            }
+            resultado.close();
+            
+            sentenciaPreparada.close();
+            conexion.close();
+         
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,dql);
+            throw excepcionHR;
+        }
+        return e;
     }
     
-    public ArrayList<Employee> leerEmployees(){
-        return null;
-    }
+     /**
+ * Lee todos los empleados de la base de datos
+ * @author Alberto Martínez - Pilar Sánchez
+ * @return Lista con todos los empleados
+ * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+ */
+
+    public ArrayList<Employee> leerEmployees() throws ExcepcionHR{
+        ArrayList<Employee> misEmployees=new ArrayList<Employee>();
+        int registrosAfectados = 0;
+        String dml = "";
+        try {
+            Statement sentencia = conexion.createStatement();
+
+            String dql1 = "select * from EMPLOYEES";
+            ResultSet resultado1 = sentencia.executeQuery(dql1);
+            while (resultado1.next()) {
+           
+                //Employee
+                Employee empleado = new Employee();
+                empleado.setEmployeeId(resultado1.getInt("EMPLOYEE_ID"));
+                empleado.setFirstName(resultado1.getString("FIRST_NAME"));
+                empleado.setLastName(resultado1.getString("LAST_NAME"));
+                empleado.setEmail(resultado1.getString("EMAIL"));
+                empleado.setPhoneNumber(resultado1.getString("PHONE_NUMBER"));
+                empleado.setHireDate(resultado1.getDate("HIRE_DATE"));
+                
+                Job miJob = new Job();
+                miJob.setJobId(resultado1.getString("JOB_ID"));
+                empleado.setJob(miJob);
+                empleado.setSalary(resultado1.getDouble("SALARY"));
+                empleado.setCommissionPct(resultado1.getDouble("COMMISSION_PCT"));
+                
+                Employee miEmpleado = new Employee();
+                empleado.setEmployeeId(resultado1.getInt("EMPLOYEE_ID"));
+                empleado.setManager(empleado);
+                
+                Department miDepartment = new Department();
+                miDepartment.setDepartmentId(resultado1.getInt("DEPARTMENT_ID"));
+                empleado.setJob(miJob);
+                empleado.setDepartment(miDepartment);
+
+                
+                
+                misEmployees.add(empleado);
+              
+
+            }
+            
+            resultado1.close();
+
+            sentencia.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+               
+         
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return misEmployees; 
+    } 
     
     public int insertarJob(Job job){
         return -1;
     }
     
-    public int borrarJob (String jobId){
-        return -1;
+  /**
+ * Borra un trabajo de la base de datos
+ * @author Alberto Martínez - Pilar Sánchez
+ * @param jobId contiene el identificador del trabajo que queremos borrar
+ * @return cantidad de trabajos insertados en la base de datos
+ * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+ */   
+ 
+    public int borrarJob(String jobId) throws ExcepcionHR{
+        String llamada = null;
+        int registrosAfectados=0;
+        try {
+            llamada = "call BORRAR_JOB(?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            
+            sentenciaLlamable.setString(1, jobId);
+            registrosAfectados=sentenciaLlamable.executeUpdate();
+            
+            sentenciaLlamable.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,llamada);
+             switch (ex.getErrorCode()) {
+                case 2292:  System.out.printf("No se puede borrar el trabajo porque tiene empleados o historiales de trabajo adheridos.");
+                            break;
+                default:    System.out.println("Error en el sistema. Consulta con el administrador");
+                            break;
+            }
+             throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
-    public int modificarJob (String jobId, Job job){
-        return -1;
+    /**
+ * Modifica un trabajo de la base de datos
+ * @author Pilar Sánchez - Alberto Martínez
+ * @param jobId contiene el identificador del trabajo que queremos modificar
+ * @param job contiene los nuevos datos del trabajo a modificar
+ * @return cantidad de trabajos modifcados en la base de datos
+ * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+ */ 
+    
+    public int modificarJob(String jobId,Job job) throws ExcepcionHR{
+        int registrosAfectados = 0;
+        String dml = "";
+        try {
+            Statement sentencia = conexion.createStatement();
+
+            dml = "update JOBS set JOB_ID = ? , JOB_TITLE = ? , MIN_SALARY = ? , MAX_SALARY = ? where JOB_ID = ?";
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            
+            sentenciaPreparada.setString(1, job.getJobId());
+            sentenciaPreparada.setString(2, job.getJobTitle());
+            sentenciaPreparada.setInt(3, job.getMinSalary());
+            sentenciaPreparada.setInt(4, job.getMaxSalary());
+            sentenciaPreparada.setString(5, jobId);
+            
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            
+            sentenciaPreparada.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 1407:  excepcionHR.setMensajeErrorUsuario("El nombre del trabajo es obligatorio");
+                            break;
+                case 2292:  excepcionHR.setMensajeErrorUsuario("No se puede modificar el identificador de trabajo ya que tiene empleados o historiales asociados");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("El identificador de empleo ya existe");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
     /**
@@ -551,8 +1238,56 @@ public class HR {
         
     }
 
-    public int insertarJobHistory(JobHistory jobHistory){
-        return -1;
+ /**
+     * Inserta un historial de trabajo en la base de datos.
+     * @author Rubén Argumosa Roiz.
+     * @param jobHistory  contiene el registro de empleado a insertar en la base de datos
+     * @return cantidad de historial de trabajo insertados en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int insertarJobHistory(JobHistory jobHistory) throws ExcepcionHR{
+        String dml="";
+        int registrosAfectados=0;
+        try {
+            dml = "INSERT JOB_HISTORY"
+                    + "(EMPLOYEE_ID,START_DATE,END_DATE,JOB_ID,DEPARTMENT_ID) "
+                    + "VALUES (?,?,?,?,?)";
+            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            
+            
+            
+            sentenciaPreparada.setInt(1, jobHistory.getEmpleado().getEmployeeId());
+            sentenciaPreparada.setDate(2, jobHistory.getStartDate());
+            sentenciaPreparada.setDate(3, jobHistory.getEndDate());
+            sentenciaPreparada.setString(4, jobHistory.getJob().getJobId());
+            sentenciaPreparada.setInt(5, jobHistory.getDepartment().getDepartmentId());
+            
+            
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            
+            sentenciaPreparada.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),null,dml);
+            switch (ex.getErrorCode()) {
+                case 2291:  excepcionHR.setMensajeErrorUsuario("Error: se ha producido uno de los siguientes errores:El departamento seleccionado no existe,El empleado no existe,El trabajo escogido no existe");
+                            break;
+                case 1400:  excepcionHR.setMensajeErrorUsuario("Identificador de empleado, fecha de entrada,y fecha de salida son obligatorios.");
+                            break;
+                case 2290: excepcionHR.setMensajeErrorUsuario("Error: la fecha de entrada no pude ser mayor a la de salida");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("El identificador de empleado y el email no pueden repetirse.");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error: el identificador de empleado no puede repetirse, en el mismo dia.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+       
+            
+        return registrosAfectados;
+        
     }
     
     /**
@@ -590,15 +1325,173 @@ public class HR {
         return registrosAfectados;
     }
     
-    public int modificarJobHistory (int employeeId, Date startDate, JobHistory jobHistory){
-        return -1;
+   /**
+     * Modifica un historial de trabajo en la base de datos.
+     * @author Rubén Argumosa Roiz.
+     * @param jobHistory  contiene el registro de empleado a insertar en la base de datos.
+     * @param employeeId contiene el identificador de empleado a modificar.
+     * @param startDate contiene la fecha de registro a modificar.
+     * @return cantidad de historial de trabajo insertados en la base de datos
+     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     */
+    public int modificarJobHistory (int employeeId, java.sql.Date startDate, JobHistory jobHistory) throws ExcepcionHR{
+        
+        String llamada = "";
+        int registrosAfectados=0;
+        try {
+            llamada = "call MODIFICAR_JOBHISTORY(?,?,?,?,?,?,?)";
+            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            
+            sentenciaLlamable.setInt(1, jobHistory.getEmpleado().getEmployeeId());
+            sentenciaLlamable.setDate(2, jobHistory.getStartDate());
+            sentenciaLlamable.setDate(3,jobHistory.getEndDate() );
+            sentenciaLlamable.setString(4, jobHistory.getJob().getJobId());
+            sentenciaLlamable.setInt(5, jobHistory.getDepartment().getDepartmentId());
+            sentenciaLlamable.setInt(6, employeeId);
+            sentenciaLlamable.setDate(7,startDate);
+            registrosAfectados=sentenciaLlamable.executeUpdate();
+            
+            sentenciaLlamable.close();
+            conexion.close();
+            
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR=new ExcepcionHR(ex.getErrorCode(),ex.getMessage(),"Error general del sistema. Consulte con el administrador.",null);
+            switch (ex.getErrorCode()) {
+                case 2291:  excepcionHR.setMensajeErrorUsuario("Error: se ha producido uno de los siguientes errores:El departamento seleccionado no existe,El empleado no existe,El trabajo escogido no existe");
+                            break;
+                case 1407:  excepcionHR.setMensajeErrorUsuario("Identificador de empleado, fecha de entrada,y fecha de salida son obligatorios.");
+                            break;
+                case 2290: excepcionHR.setMensajeErrorUsuario("Error: la fecha de entrada no pude ser mayor a la de salida");
+                            break;
+                case 1:     excepcionHR.setMensajeErrorUsuario("El identificador de empleado y el email no pueden repetirse.");
+                            break;
+                default:    excepcionHR.setMensajeErrorUsuario("Error: inesperado, consulte con el administrador.");
+                            break;
+            }
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
     
-    public JobHistory leerJobHistory(int employeeId, Date startDate){
-        return null;
+    /**
+     * Mustra la informacion de un registro job_history
+     *
+     * @author Rodrigo Corsini
+     * @param employeeId contiene el identificador del empleado a buscar
+     * @param startDate la fecha de inicio
+     * @return datos del job_history
+     * @throws ExcepcionHR con toda la información acerca del error que se ha
+     * producido
+     */
+    public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR {
+        JobHistory j = new JobHistory();
+
+        String dql1 = "";
+
+        try {
+            Statement sentencia = conexion.createStatement();
+
+            dql1 = "select * from job_history where EMPLOYEE_ID=" + employeeId + " and " + "START_DATE=" + startDate;
+            ResultSet resultado1 = sentencia.executeQuery(dql1);
+            while (resultado1.next()) {
+                //Employee
+                Employee e = new Employee();
+                e.setEmployeeId(employeeId);
+                j.setEmpleado(e);
+
+                //Start--End--> Date
+                j.setStartDate(startDate);
+                j.setEndDate(resultado1.getDate("END_DATE"));
+                //Job
+                Job r = new Job();
+                r.setJobId(resultado1.getString("JOB_ID"));
+                j.setJob(r);
+
+                //Department
+                Department a = new Department();
+                a.setDepartmentId(resultado1.getInt("DEPARTMENT_ID"));
+                j.setJob(r);
+
+            }
+
+            resultado1.close();
+
+            sentencia.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql1);
+            switch (ex.getErrorCode()) {
+
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return j;
     }
-    
-    public ArrayList<JobHistory> leerJobHistorys(){
-        return null;
+
+    /**
+     * Mustra la informacion de todos los registros de job_history
+     *
+     * @author Rodrigo Corsini
+     * @return ArrayList con todos los job_history
+     * @throws ExcepcionHR con toda la información acerca del error que se ha
+     * producido
+     */
+
+    public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {
+
+        ArrayList<JobHistory> misJobs = new ArrayList<JobHistory>();
+        int registrosAfectados = 0;
+        String dql1 = "";
+        try {
+            Statement sentencia = conexion.createStatement();
+
+             dql1 = "select * from job_history";
+            ResultSet resultado1 = sentencia.executeQuery(dql1);
+            while (resultado1.next()) {
+                JobHistory j1 = new JobHistory();
+                //Employee
+                Employee e = new Employee();
+                e.setEmployeeId(resultado1.getInt("EMPLOYEE_ID"));
+                j1.setEmpleado(e);
+
+                //Start--End--> Date
+                j1.setStartDate(resultado1.getDate("START_DATE"));
+                j1.setEndDate(resultado1.getDate("END_DATE"));
+                //Job
+                Job r = new Job();
+                r.setJobId(resultado1.getString("JOB_ID"));
+                j1.setJob(r);
+
+                //Department
+                Department a = new Department();
+                a.setDepartmentId(resultado1.getInt("DEPARTMENT_ID"));
+                j1.setJob(r);
+
+                //LLENAR ARRAYLIST
+                misJobs.add(j1);
+
+            }
+
+            resultado1.close();
+
+            sentencia.close();
+            conexion.close();
+
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql1);
+            switch (ex.getErrorCode()) {
+
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+                    break;
+            }
+            throw excepcionHR;
+        }
+        return misJobs;
+
     }
 }
