@@ -1,65 +1,108 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr;
 
 /**
- *
- * @author usuario
+ * Clase que representa una excepción con toda la información relativa al motivo
+ * por el que se ha producido la misma
+ * @author Ignacio Fontecha Hernández
+ * @version 1.0
  */
 public class ExcepcionHR extends Exception {
-    private int codigoErrorBD;
-    private String mensajeErrorBD;
+    private int codigoErrorSistema;
+    private String mensajeErrorSistema;
     private String mensajeErrorUsuario;
-    private String dml;
+    private String sentenciaSQL;
 
+    /**
+     * Constructor vacío
+     */
     public ExcepcionHR() {
     }
 
-    public ExcepcionHR(int codigoErrorBD, String mensajeErrorBD, String mensajeErrorUsuario, String dml) {
-        this.codigoErrorBD = codigoErrorBD;
-        this.mensajeErrorBD = mensajeErrorBD;
+    /**
+     * Constructor completo
+     * @param codigoErrorSistema Código de error devuelto por el sistema
+     * @param mensajeErrorSistema Mensaje de error devuelto por el sistema
+     * @param mensajeErrorUsuario Mensaje de error a enviar al usuario
+     * @param sentenciaSQL Sentencia SQL que producido la excepción
+     */
+    public ExcepcionHR(int codigoErrorSistema, String mensajeErrorSistema, String mensajeErrorUsuario, String sentenciaSQL) {
+        this.codigoErrorSistema = codigoErrorSistema;
+        this.mensajeErrorSistema = mensajeErrorSistema;
         this.mensajeErrorUsuario = mensajeErrorUsuario;
-        this.dml = dml;
+        this.sentenciaSQL = sentenciaSQL;
     }
 
-    public int getCodigoErrorBD() {
-        return codigoErrorBD;
+    /**
+     * Getter del código de error devuelto por el sistema
+     * @return Código de error devuelto por el sistema
+     */
+    public int getCodigoErrorSistema() {
+        return codigoErrorSistema;
     }
 
-    public void setCodigoErrorBD(int codigoErrorBD) {
-        this.codigoErrorBD = codigoErrorBD;
+    /**
+     * Setter del código de error devuelto por el sistema
+     * @param codigoErrorSistema Código de error devuelto por el sistema
+     */
+    public void setCodigoErrorSistema(int codigoErrorSistema) {
+        this.codigoErrorSistema = codigoErrorSistema;
     }
 
-    public String getMensajeErrorBD() {
-        return mensajeErrorBD;
+    /**
+     * Getter del mensaje de error devuelto por el sistema
+     * @return Mensaje de error devuelto por el sistema
+     */
+    public String getMensajeErrorSistema() {
+        return mensajeErrorSistema;
     }
 
-    public void setMensajeErrorBD(String mensajeErrorBD) {
-        this.mensajeErrorBD = mensajeErrorBD;
+    /**
+     * Setter del mensaje de error devuelto por el sistema
+     * @param mensajeErrorSistema Mensaje de error devuelto por el sistema
+     */
+    public void setMensajeErrorSistema(String mensajeErrorSistema) {
+        this.mensajeErrorSistema = mensajeErrorSistema;
     }
 
+    /**
+     * Getter del mensaje de error a enviar al usuario
+     * @return Mensaje de error a enviar al usuario
+     */
     public String getMensajeErrorUsuario() {
         return mensajeErrorUsuario;
     }
 
+    /**
+     * Setter del mensaje de error a enviar al usuario
+     * @param mensajeErrorUsuario Mensaje de error a enviar al usuario
+     */
     public void setMensajeErrorUsuario(String mensajeErrorUsuario) {
         this.mensajeErrorUsuario = mensajeErrorUsuario;
     }
 
-    public String getDml() {
-        return dml;
+    /**
+     * Getter de la sentencia SQL que producido la excepción
+     * @return Sentencia SQL que producido la excepción
+     */
+    public String getSentenciaSQL() {
+        return sentenciaSQL;
     }
 
-    public void setDml(String dml) {
-        this.dml = dml;
+    /**
+     * Setter de la sentencia SQL que producido la excepción
+     * @param sentenciaSQL Sentencia SQL que producido la excepción
+     */
+    public void setSentenciaSQL(String sentenciaSQL) {
+        this.sentenciaSQL = sentenciaSQL;
     }
 
+    /**
+     * Método toString de la clase
+     * @return Texto con todos los datos de la excepción
+     */
     @Override
     public String toString() {
-        return "ExcepcionHR{" + "codigoErrorBD=" + codigoErrorBD + ", mensajeErrorBD=" + mensajeErrorBD + ", mensajeErrorUsuario=" + mensajeErrorUsuario + ", dml=" + dml + '}';
+        return "ExcepcionHR{" + "codigoErrorSistema=" + codigoErrorSistema + ", mensajeErrorSistema=" + mensajeErrorSistema + ", mensajeErrorUsuario=" + mensajeErrorUsuario + ", sentenciaSQL=" + sentenciaSQL + '}';
     }
     
 }

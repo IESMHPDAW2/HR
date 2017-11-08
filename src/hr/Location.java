@@ -1,8 +1,7 @@
-
 package hr;
 
 /**
- * Clase que represanta una localidad
+ * Clase que representa una localidad
  * @author david
  * @version 1.0
  */
@@ -15,19 +14,19 @@ public class Location {
     private Country country;
 
     /**
-     * Constructor vacio.
+     * Constructor vacio
      */
     public Location() {
     }
 
     /**
-     *  Constructor Completo
+     * Constructor completo
      * @param locationId Identificador de la localidad
      * @param streetAddress Calle de la localidad
      * @param postalCode Codigo postal de la localidad
      * @param city Ciudad de la localidad
      * @param stateProvince Provincia o estado de la localidad
-     * @param country Objeto de la clase Country correspodiente a la localidad
+     * @param country País en el que se ubica la localidad
      */
     public Location(int locationId, String streetAddress, String postalCode, String city, String stateProvince, Country country) {
         this.locationId = locationId;
@@ -56,7 +55,7 @@ public class Location {
 
     /**
      * Getter de la calle de la localidad
-     * @return Calle de la clase de la localidad
+     * @return Calle de la localidad
      */
     public String getStreetAddress() {
         return streetAddress;
@@ -119,20 +118,27 @@ public class Location {
     }
 
     /**
-     * Getter del objeto de la clase Country
-     * @return Objeto de la clase Country
+     * Getter del país en el que se ubica la localidad
+     * @return País en el que se ubica la localidad
      */
     public Country getCountry() {
         return country;
     }
 
     /**
-     * Setter del objeto de la clase Country
-     * @param country Objeto de la clase Country
+     * Setter del país en el que se ubica la localidad
+     * @param country País en el que se ubica la localidad
      */
     public void setCountry(Country country) {
         this.country = country;
     }
-    
-    
+
+    /**
+     * Método toString de la clase
+     * @return Texto con todos los datos de la localidad
+     */
+    @Override
+    public String toString() {
+        return "Location{" + "locationId=" + locationId + ", streetAddress=" + streetAddress + ", postalCode=" + postalCode + ", city=" + city + ", stateProvince=" + stateProvince + ", country=" + country + '}';
+    }
 }

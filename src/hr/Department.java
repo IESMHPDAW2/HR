@@ -1,8 +1,7 @@
-
 package hr;
 
 /**
- * Clase que represanta un departamento.
+ * Clase que representa un departamento.
  * @author david
  * @version 1.0
  */
@@ -22,8 +21,8 @@ public class Department {
      * Constructor completo
      * @param departmentId Identificador del departamento
      * @param departmentName Nombre del departamento
-     * @param manager Objeto de la clase Employee correspondiente al departamento
-     * @param location Objeto de la clase Location correspondiente al departamento
+     * @param manager Responsable del departamento
+     * @param location Localidad en la que se ubica el departamento
      */
     public Department(int departmentId, String departmentName, Employee manager, Location location) {
         this.departmentId = departmentId;
@@ -65,35 +64,43 @@ public class Department {
     }
 
     /**
-     * Getter del objeto de la clase Employee
-     * @return Objeto de la clase Employee
+     * Getter del responsable del departamento
+     * @return Responsable del departamento
      */
     public Employee getManager() {
         return manager;
     }
 
     /**
-     * Setter del objeto de la clase Employee
-     * @param manager Objeto de la clase Employee
+     * Setter del responsable del departamento
+     * @param manager Responsable del departamento
      */
     public void setManager(Employee manager) {
         this.manager = manager;
     }
 
     /**
-     * Getter del objeto de la clase Location
-     * @return Objeto de la clase Location
+     * Getter de la localidad en la que se ubica el departamento
+     * @return Localidad en la que se ubica el departamento
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * Setter del objeto de la clase Location
-     * @param location Objeto de la clase Location
+     * Setter de la localidad en la que se ubica el departamento
+     * @param location Localidad en la que se ubica el departamento
      */
     public void setLocation(Location location) {
         this.location = location;
     }
-       
+
+    /**
+     * Método toString de la clase
+     * @return Texto con todos los datos del departamento
+     */
+    @Override
+    public String toString() {
+        return "Department{" + "departmentId=" + departmentId + ", departmentName=" + departmentName + ", manager=" + manager + ", location=" + location + '}';
+    }
 }

@@ -3,7 +3,8 @@ package hr;
 import java.util.Date;
 
 /**
- * Clase que representa el historial de trabajos de un empleado.
+ * Clase que representa un dato histórico de trabajo y/o departamento de 
+ * un empleado
  * @author Jonathan
  * @version 1.0
  */
@@ -14,19 +15,19 @@ public class JobHistory {
     private Job job;
     private Department department;
 
-     /**
+    /**
      * Constructor vacio
      */
     public JobHistory() {
     }
 
-     /**
+    /**
      * Constructor completo
-     * @param empleado Objeto de la clase Employee correspondiente al empleado
-     * @param startDate Objeto de la clase Date correspondiente a la fecha de contratacion
-     * @param endDate Objeto de la clase Date correspondiente la fecha de finalizacion del trabajo
-     * @param job Objeto de la clase Job correspondiente al trabajo
-     * @param department Objeto de la case Department correspondiente al departamento
+     * @param empleado Empleado objeto del dato histórico
+     * @param startDate Fecha de inicio del dato histórico
+     * @param endDate Fecha de fin del dato histórico
+     * @param job Trabajo que desarrollaba el empleado entre las fechas de inicio y fin
+     * @param department Departamento al que pertenecía el empleado entre las fechas de inicio y fin
      */
     public JobHistory(Employee empleado, Date startDate, Date endDate, Job job, Department department) {
         this.empleado = empleado;
@@ -36,93 +37,93 @@ public class JobHistory {
         this.department = department;
     }
 
-    
     /**
-    * Getter del Empleado
-    * @return Objeto de la clase Employee con los datos del empleado
-    */
+     * Getter del empleado objeto del dato histórico
+     * @return Empleado objeto del dato histórico
+     */
     public Employee getEmpleado() {
         return empleado;
     }
     
-    
     /**
-    * Setter del Empleado de JobHistory
-    * @param empleado Objeto de la clase Employee con los datos del Empleado
-    */
+     * Setter del empleado objeto del dato histórico
+     * @param empleado Empleado objeto del dato histórico
+     */
     public void setEmpleado(Employee empleado) {
         this.empleado = empleado;
     }
-
     
     /**
-    * Getter de la fecha de contratacion
-    * @return Objeto clase Date con fecha de contratacion
-    */
+     * Getter de la fecha de inicio del dato histórico
+     * @return Fecha de inicio del dato histórico
+     */
     public Date getStartDate() {
         return startDate;
     }
 
-    
     /**
-    * Setter de la fecha de contratacion de JobHistory
-    * @param startDate Objeto de la clase Date con la fecha de contratacion
-    */
+     * Setter de la fecha de inicio del dato histórico
+     * @param startDate Fecha de inicio del dato histórico
+     */
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
     /**
-    * Getter de la fecha de fin del trabajo
-    * @return Objeto clase Date con fecha de fin del contrato
-    */
+     * Getter de la fecha de fin del dato histórico
+     * @return Fecha de fin del dato histórico
+     */
     public Date getEndDate() {
         return endDate;
     }
 
-    
     /**
-    * Setter de la fecha de finalizacion del contrato de JobHistory
-    * @param endDate Objeto de la clase Date con la fecha de finalizacion
-    */
+     * Setter de la fecha de fin del dato histórico
+     * @param endDate Fecha de fin del dato histórico
+     */
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    
     /**
-    * Getter de Trabajo
-    * @return Objeto clase Job con los datos del trabajo
-    */
+     * Getter del trabajo que desarrollaba el empleado entre las fechas de inicio y fin
+     * @return Trabajo que desarrollaba el empleado entre las fechas de inicio y fin
+     */
     public Job getJob() {
         return job;
     }
 
-    
     /**
-    * Setter del trabajo de jobHistory
-    * @param job Objeto de la clase Job con los datos del trabajo
-    */
+     * Setter del trabajo que desarrollaba el empleado entre las fechas de inicio y fin
+     * @param job Trabajo que desarrollaba el empleado entre las fechas de inicio y fin
+     */
     public void setJob(Job job) {
         this.job = job;
     }
 
-    
     /**
-    * Getter del departamento
-    * @return Objeto clase Department con los datos de departamento
-    */
+     * Getter del departamento al que pertenecía el empleado entre las fechas de inicio y fin
+     * @return Departamento al que pertenecía el empleado entre las fechas de inicio y fin
+     */
     public Department getDepartment() {
         return department;
     }
 
-    
     /**
-    * Setter del departamento de jobHistory
-    * @param department Objeto de la clase Department con los datos del departamento
-    */
+     * Setter del departamento al que pertenecía el empleado entre las fechas de inicio y fin
+     * @param department Departamento al que pertenecía el empleado entre las fechas de inicio y fin
+     */
     public void setDepartment(Department department) {
         this.department = department;
     }
-    
+
+    /**
+     * Método toString de la clase
+     * @return Texto con todos los datos de un dato histórico de trabajo y/o
+     * departamento de un empleado
+     */
+    @Override
+    public String toString() {
+        return "JobHistory{" + "empleado=" + empleado + ", startDate=" + startDate + ", endDate=" + endDate + ", job=" + job + ", department=" + department + '}';
+    }
 }

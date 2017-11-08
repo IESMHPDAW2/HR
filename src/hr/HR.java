@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr;
 
 import java.sql.CallableStatement;
@@ -16,13 +11,20 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- *
- * @author usuario
+ * Clase que encapsula la funcionalidad necesaria para realizar todas las 
+ * operaciones de alta, baja, modificacion y consulta de todas las tablas de la
+ * base de datos HR
+ * @author Ignacio Fontecha Hernández
+ * @version 1.0
  */
 public class HR {
 
     Connection conexion;
     
+    /**
+     * Constructor vacío
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
     public HR() throws ExcepcionHR {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -37,11 +39,11 @@ public class HR {
     }
     
     /**
-     * Inserta una region a la base de datos.
+     * Inserta una región en la base de datos.
      * @author David Fernandez Garcia
-     * @param region Contiene la region a insertar en la base de datos.
-     * @return Cantidad de regiones que se han insertado en la base de datos.
-     * @throws ExcepcionHR ExcepcionHR con toda la informacion del errror producido.
+     * @param region Región a insertar
+     * @return Cantidad de regiones que se han insertado
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarRegion(Region region) throws ExcepcionHR{
         String dml = "";
@@ -51,7 +53,7 @@ public class HR {
             PreparedStatement sentencia = conexion.prepareStatement(dml);
             sentencia.setInt(1, region.getRegionId());
             sentencia.setString(2, region.getRegionName());
-            
+
             registrosAfectados = sentencia.executeUpdate();
 
             sentencia.close();
@@ -77,9 +79,9 @@ public class HR {
     /**
      * Elimina una region de la base de datos
      * @author Ricardo Pérez Barreda
-     * @param regionId contiene el identificador de la región a eliminar
-     * @return cantidad de regiones eliminadas en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param regionId Identificador de la región a eliminar
+     * @return Cantidad de regiones eliminadas
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarRegion(int regionId) throws ExcepcionHR {
         String dml = null;
@@ -113,7 +115,7 @@ public class HR {
      * @param regionId contiene el identificador de la region a modificar
      * @param region contiene el identificador y nombre de la nueva region
      * @return Numero de registros afectados
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarRegion(int regionId, Region region) throws ExcepcionHR {
         String dml = null;
@@ -153,7 +155,7 @@ public class HR {
      * @author Jonathan León Lorenzo
      * @param regionId contiene el identificador de la region a buscar
      * @return un objeto de tipo Region con el pais a mostrar.
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Region leerRegion(int regionId) throws ExcepcionHR {
         String llamada = "";
@@ -188,7 +190,7 @@ public class HR {
      * Muestra las regiones de la base de datos
      * @author Jonathan León Lorenzo
      * @return un ArrayList de tipo Region con los paises a mostrar.
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Region> leerRegions() throws ExcepcionHR {
         String llamada = "";
@@ -222,11 +224,11 @@ public class HR {
     }
     
     /**
-     * Inserta un pais en la base de datos
+     * Inserta un país en la base de datos
      * @author Ricardo Pérez Barreda
-     * @param country contiene el pais a insertar en la base de datos
-     * @return cantidad de paises insertados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param country País a insertar
+     * @return cantidad de paises insertados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarCountry(Country country) throws ExcepcionHR{
         String dml="";
@@ -268,9 +270,9 @@ public class HR {
     /**
      * Elimina un país de la base de datos
      * @author Ignacio Fontecha Hernández
-     * @param countryId contiene el identificador del país a eliminar
-     * @return cantidad de paises eliminados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param countryId Identificador del país a eliminar
+     * @return cantidad de paises eliminados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarCountry (String countryId) throws ExcepcionHR{
         String llamada = "";
@@ -298,12 +300,12 @@ public class HR {
         return registrosAfectados;    }
     
     /**
-     * Modifica un pais de la base de datos
+     * Modifica un país de la base de datos
      * @author David Fernandez Garcia
-     * @param countryId contiene el identificador del pais a modificar
+     * @param countryId Identificador del país a modificar
      * @param country contiene la nueva informacion del pais a modificar
-     * @return cantidad de paises modificados en la base de datos
-     * @throws ExcepcionHR con toda la informacion del errror producido
+     * @return cantidad de paises modificados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarCountry(String countryId,Country country) throws ExcepcionHR{
         String llamada = "";
@@ -347,11 +349,11 @@ public class HR {
     }
     
     /**
-     * Consulta todos los paises
+     * Consulta un país de la base de datos
      * @author Ricardo Pérez Barreda
-     * @param countryId contiene el identificador del pais a consultar
-     * @return ccountry de la consulta generada
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param countryId Identificador del pais a consultar
+     * @return País a consultar
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Country leerCountry(String countryId) throws ExcepcionHR{
         String dml="";
@@ -379,7 +381,7 @@ public class HR {
      * Leer los paises de la base de datos
      * @author Daniel Portilla López
      * @return devuvelve una lista con paises que hay en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Country> leerCountrys() throws ExcepcionHR{
         Country c = null;
@@ -411,13 +413,11 @@ public class HR {
     }
     
     /**
-     * Inserta una localización enla base de datos
-     *
+     * Inserta una localidad en la base de datos
      * @author Carlos Labrador Amieva
-     * @param location contiene todos los datos de la localización a añadir.
-     * @return cantidad de localizaciones insertadas en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha
-     * producido
+     * @param location Localidad a insertar
+     * @return cantidad de localidades insertadas
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarLocation(Location location) throws ExcepcionHR {
         String llamada = "";
@@ -461,9 +461,9 @@ public class HR {
     /**
      * Elimina una localidad de la base de datos
      * @author David Fernandez Garcia
-     * @param locationId identificador de la localidad a eliminar de la base de datos.
-     * @return Cantidad de localidades borradas en la base de datos
-     * @throws ExcepcionHR con toda la informacion del errror producido.
+     * @param locationId Identificador de la localidad a eliminar
+     * @return Cantidad de localidades eliminadas
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarLocation(int locationId) throws ExcepcionHR{
         String dml = "";
@@ -493,15 +493,14 @@ public class HR {
         return registrosAfectados;
     }
     
- /**
- * Modifica una localidad de la base de datos
- * @author Alberto Martínez - Pilar Sánchez
- * @param locationId  contiene el identificador de la localidad a modificar
- * @param location contiene los nuevos datos de la localidad a modificar
- * @return cantidad de localidades modificadas en la base de datos
- * @throws ExcepcionHR con toda la información acerca del error que se ha producido
- */
-
+    /**
+     * Modifica una localidad de la base de datos
+     * @author Alberto Martínez - Pilar Sánchez
+     * @param locationId  contiene el identificador de la localidad a modificar
+     * @param location contiene los nuevos datos de la localidad a modificar
+     * @return cantidad de localidades modificadas en la base de datos
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
     public int modificarLocation(int locationId,Location location) throws ExcepcionHR{
         int registrosAfectados = 0;
         String dml = "";
@@ -547,7 +546,7 @@ public class HR {
      * Lee los datos de una localidad determinada
      * @param locationId Identificador de la localidad a buscar
      * @return Localidad con los datos obtenidos
-     * @throws ExcepcionHR con toda la informacion del errror producido.
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Location leerLocation(int locationId) throws ExcepcionHR{
         Location location = new Location();
@@ -583,7 +582,7 @@ public class HR {
     /**
      * Lee todas las localidades de la base de datos.
      * @return Una lista con todas las localidades de la base de datos
-     * @throws ExcepcionHR con toda la informacion del errror producido.
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Location> leerLocations() throws ExcepcionHR{
         ArrayList<Location> locations = new ArrayList();
@@ -614,10 +613,10 @@ public class HR {
     }
     
     /**
-     * Metodo que añade un Department a la base de datos
-     * @param department Department a insertar en la base de datos
-     * @return numero de registros afectados
-     * @throws ExcepcionHR excepcion generada por la base de datos
+     * Inserta un departamento en la base de datos
+     * @param department Departmento a insertar
+     * @return Cantidad de departamentos insertados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarDepartment(Department department) throws ExcepcionHR {
         String dml = "";
@@ -665,10 +664,10 @@ public class HR {
     }
 
     /**
-     * Metodo que borra un Department de la base de datos
-     * @param departmentId identificador del departamento que vamos a eliminar
-     * @return numero de registros afectados
-     * @throws ExcepcionHR excepcion generada por la base de datos
+     * Elimina un departamento de la base de datos
+     * @param departmentId Identificador del departamento a eliminar
+     * @return Cantidad de departamentos eliminados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarDepartment(int departmentId) throws ExcepcionHR {
         String dml = null;
@@ -704,7 +703,7 @@ public class HR {
      * @param departmentId contiene el identificador del departamento a modificar
      * @param department contiene la nuevos datos del departamento a modificar
      * @return cantidad de departamentos modificados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarDepartment (int departmentId, Department department) throws ExcepcionHR {
         int registrosAfectados = 0;
@@ -743,10 +742,10 @@ public class HR {
     }
     
     /**
-     * Metodo que obtiene de la base de datos un Department
-     * @param departmentId identificador del Department a obtener
-     * @return Department deseado
-     * @throws ExcepcionHR excepcion generada por la base de datos
+     * Consulta un departamento de la base de datos
+     * @param departmentId identificador del departmento a consultar
+     * @return Departmento a consultar
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Department leerDepartment(int departmentId) throws ExcepcionHR {
         Department d = new Department();
@@ -790,7 +789,7 @@ public class HR {
     /**
      * Metodo que obtiene todos los Department de la base de datos
      * @return todos los Departament de la base de datos
-     * @throws ExcepcionHR excepcion generada por la base de datos
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Department> leerDepartments() throws ExcepcionHR {
         ArrayList<Department> solucion = new ArrayList<Department>();
@@ -834,9 +833,9 @@ public class HR {
     /**
      * Inserta un empleado en la base de datos
      * @author Ignacio Fontecha Hernández
-     * @param employee contiene el empleado a insertar en la base de datos
-     * @return cantidad de empleados insertados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param employee Empleado a insertar
+     * @return Cantidad de empleados insertados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarEmployee(Employee employee) throws ExcepcionHR{
         String dml="";
@@ -888,9 +887,9 @@ public class HR {
     /**
      * Elimina un empleado de la base de datos
      * @author Jonathan León Lorenzo
-     * @param employeeId contiene el identificador de la region a eliminar
-     * @return cantidad de empleados insertados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param employeeId Identificador del empleado a eliminar
+     * @return cantidad de empleados eliminados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarEmployee (int employeeId) throws ExcepcionHR{
         String llamada = "";
@@ -924,7 +923,7 @@ public class HR {
      * @param employeeId contiene el identificador del empleado a modificar
      * @param employee contiene la nuevos datos del empleado a modificar
      * @return cantidad de empleados modificados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarEmployee (int employeeId, Employee employee) throws ExcepcionHR{
         int registrosAfectados = 0;
@@ -971,13 +970,12 @@ public class HR {
     }
     
     /**
- * Lee un empleado de la base de datos
- * @author Alberto Martínez - Pilar Sánchez
- * @param employeeId  contiene el identificador del empleado a leer
- * @return empleado que coincide con el identificador pasado
- * @throws ExcepcionHR con toda la información acerca del error que se ha producido
- */
-
+     * Consulta un empleado de la base de datos
+     * @author Alberto Martínez - Pilar Sánchez
+     * @param employeeId  Identificador del empleado a consultar
+     * @return Empleado a consultar
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
     public Employee leerEmployee(int employeeId) throws ExcepcionHR{
         String dql="";
         Employee e=new Employee();
@@ -1017,13 +1015,12 @@ public class HR {
         return e;
     }
     
-     /**
- * Lee todos los empleados de la base de datos
- * @author Alberto Martínez - Pilar Sánchez
- * @return Lista con todos los empleados
- * @throws ExcepcionHR con toda la información acerca del error que se ha producido
- */
-
+    /**
+     * Lee todos los empleados de la base de datos
+     * @author Alberto Martínez - Pilar Sánchez
+     * @return Lista con todos los empleados
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
     public ArrayList<Employee> leerEmployees() throws ExcepcionHR{
         ArrayList<Employee> misEmployees=new ArrayList<Employee>();
         int registrosAfectados = 0;
@@ -1085,18 +1082,24 @@ public class HR {
         return misEmployees; 
     } 
     
+    /**
+     * Inserta un trabajo en la base de datos
+     * @author Ignacio Fontecha Hernández
+     * @param job Trabajo a insertar
+     * @return Cantidad de trabajos insertados
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
     public int insertarJob(Job job){
         return -1;
     }
     
-  /**
- * Borra un trabajo de la base de datos
- * @author Alberto Martínez - Pilar Sánchez
- * @param jobId contiene el identificador del trabajo que queremos borrar
- * @return cantidad de trabajos insertados en la base de datos
- * @throws ExcepcionHR con toda la información acerca del error que se ha producido
- */   
- 
+    /**
+     * Elimina un trabajo de la base de datos
+     * @author Alberto Martínez - Pilar Sánchez
+     * @param jobId Identificador del trabajo a eliminar
+     * @return cantidad de trabajos eliminados
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */   
     public int borrarJob(String jobId) throws ExcepcionHR{
         String llamada = null;
         int registrosAfectados=0;
@@ -1124,14 +1127,13 @@ public class HR {
     }
     
     /**
- * Modifica un trabajo de la base de datos
- * @author Pilar Sánchez - Alberto Martínez
- * @param jobId contiene el identificador del trabajo que queremos modificar
- * @param job contiene los nuevos datos del trabajo a modificar
- * @return cantidad de trabajos modifcados en la base de datos
- * @throws ExcepcionHR con toda la información acerca del error que se ha producido
- */ 
-    
+     * Modifica un trabajo de la base de datos
+     * @author Pilar Sánchez - Alberto Martínez
+     * @param jobId contiene el identificador del trabajo que queremos modificar
+     * @param job contiene los nuevos datos del trabajo a modificar
+     * @return cantidad de trabajos modifcados en la base de datos
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */ 
     public int modificarJob(String jobId,Job job) throws ExcepcionHR{
         int registrosAfectados = 0;
         String dml = "";
@@ -1170,10 +1172,11 @@ public class HR {
     }
     
     /**
-     * Leer un registro de la tabla Job de la base de datos
+     * Consulta un trabajo de la base de datos
      * @author Adela Verdeja
-     * @param jobId contiene el identificado del trabajo a leer.
-     * @return devuelve un objeto de la clase Job
+     * @param jobId Identificado del trabajo a consultar
+     * @return Trabajo a consultar
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Job leerJob(String jobId) {
         Job j = new Job();
@@ -1205,8 +1208,7 @@ public class HR {
      *
      * @author Carlos Labrador
      * @return ArrayList de Jobs con todos los trabajos en la base de datos.
-     * @throws ExcepcionHR con toda la información acerca del error que se ha
-     * producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Job> leerJobs() throws ExcepcionHR {
          Job j = null;
@@ -1239,11 +1241,12 @@ public class HR {
     }
 
  /**
-     * Inserta un historial de trabajo en la base de datos.
+     * Inserta un dato histórico de trabajo y/o departamento de un empleado
+     * en la base de datos
      * @author Rubén Argumosa Roiz.
-     * @param jobHistory  contiene el registro de empleado a insertar en la base de datos
-     * @return cantidad de historial de trabajo insertados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @param jobHistory dato histórico de trabajo y/o departamento de un empleado a insertar
+     * @return cantidad de datos históricos de trabajo y/o departamento de un empleado insertados
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarJobHistory(JobHistory jobHistory) throws ExcepcionHR{
         String dml="";
@@ -1297,9 +1300,7 @@ public class HR {
      * @param employeeId contienne el identificado del registro de jobHistory a
      * modificar
      * @param startDate contiene la fecha a borrar del registro de JobHistory
-     * @return cantidad de registros eliminados de JobHistory de la base de
-     * datos
-     *
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int BorrarJobHistory(int employeeId, java.sql.Date startDate) throws ExcepcionHR {
         String llamada = "";
@@ -1332,7 +1333,7 @@ public class HR {
      * @param employeeId contiene el identificador de empleado a modificar.
      * @param startDate contiene la fecha de registro a modificar.
      * @return cantidad de historial de trabajo insertados en la base de datos
-     * @throws ExcepcionHR con toda la información acerca del error que se ha producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarJobHistory (int employeeId, java.sql.Date startDate, JobHistory jobHistory) throws ExcepcionHR{
         
@@ -1375,13 +1376,11 @@ public class HR {
     
     /**
      * Mustra la informacion de un registro job_history
-     *
      * @author Rodrigo Corsini
      * @param employeeId contiene el identificador del empleado a buscar
      * @param startDate la fecha de inicio
      * @return datos del job_history
-     * @throws ExcepcionHR con toda la información acerca del error que se ha
-     * producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR {
         JobHistory j = new JobHistory();
@@ -1434,11 +1433,9 @@ public class HR {
 
     /**
      * Mustra la informacion de todos los registros de job_history
-     *
      * @author Rodrigo Corsini
      * @return ArrayList con todos los job_history
-     * @throws ExcepcionHR con toda la información acerca del error que se ha
-     * producido
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
 
     public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {

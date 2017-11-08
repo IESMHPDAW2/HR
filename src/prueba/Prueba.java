@@ -91,7 +91,7 @@ public class Prueba {
             int x = hr.borrarCountry("US");
             System.out.println("Registros eliminados: " + x);
         } catch (ExcepcionHR ex) {
-            System.out.println(ex.getMensajeErrorBD());
+            System.out.println(ex.getMensajeErrorSistema());
             System.out.println(ex.getMensajeErrorUsuario());
         }
     }
@@ -105,7 +105,7 @@ public class Prueba {
             Location l = new Location(1701, "el alto quijas", "39590", "quijas", "cantabria", c);
             hr.insertarLocation(l);
         } catch (ExcepcionHR ex) {
-            System.out.println(ex.getMensajeErrorBD());
+            System.out.println(ex.getMensajeErrorSistema());
         }
     }
 
@@ -125,7 +125,7 @@ public class Prueba {
                         + "Salario máximo: " + j.getMaxSalary() + "\n");
             }
         } catch (ExcepcionHR ex) {
-            System.out.println(ex.getMensajeErrorBD());
+            System.out.println(ex.getMensajeErrorSistema());
         }
     }
     
@@ -349,7 +349,7 @@ public class Prueba {
             }
             
         } catch (ExcepcionHR ex) {
-            System.out.println(ex.getMensajeErrorBD());
+            System.out.println(ex.getMensajeErrorSistema());
             System.out.println(ex.getMensajeErrorUsuario());
         }
     }
@@ -400,7 +400,7 @@ JobHistory jh= new JobHistory(empleado,startDate,endDate,trabajo,department);
             JobHistory jh= new JobHistory(empleado,parametroStarDate,endDate,trabajo,department);
             hr.insertarJobHistory(jh);
         } catch (ExcepcionHR ex) {
-           System.out.println(ex.getMensajeErrorUsuario()+ ex.getMensajeErrorBD());
+           System.out.println(ex.getMensajeErrorUsuario()+ ex.getMensajeErrorSistema());
         }
     
     }
