@@ -1,6 +1,6 @@
 package hr;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Clase que representa un dato histórico de trabajo y/o departamento de 
