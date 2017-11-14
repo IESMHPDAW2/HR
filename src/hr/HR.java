@@ -1,4 +1,4 @@
-package hr;
+ package hr;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -39,13 +39,40 @@ public class HR {
     }
 
     /**
-     * Cierra de forma ordenada la conexión de la base de datos.
+     * Cierra de forma ordenada un objeto Statement y la conexión de la base de 
+     * datos
      * @author Ignacio Fontecha Hernández
      * @param conexion Conexion a cerrar
      */
     private void cerrarConexion(Connection conexion, Statement sentencia) {
         try {
            sentencia.close();
+           conexion.close();
+        } catch (SQLException | NullPointerException ex) {}
+    }
+    
+    /**
+     * Cierra de forma ordenada un objeto Statement y la conexión de la base de 
+     * datos
+     * @author Ignacio Fontecha Hernández
+     * @param conexion Conexion a cerrar
+     */
+    private void cerrarConexion(Connection conexion, PreparedStatement sentenciaPreparada) {
+        try {
+           sentenciaPreparada.close();
+           conexion.close();
+        } catch (SQLException | NullPointerException ex) {}
+    }
+    
+    /**
+     * Cierra de forma ordenada un objeto Statement y la conexión de la base de 
+     * datos
+     * @author Ignacio Fontecha Hernández
+     * @param conexion Conexion a cerrar
+     */
+    private void cerrarConexion(Connection conexion, CallableStatement sentenciaLlamable) {
+        try {
+           sentenciaLlamable.close();
            conexion.close();
         } catch (SQLException | NullPointerException ex) {}
        
@@ -59,11 +86,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarRegion(Region region) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "insert into regions(region_id,region_name) values(?,?)";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, region.getRegionId());
             sentenciaPreparada.setString(2, region.getRegionName());
             registrosAfectados = sentenciaPreparada.executeUpdate();
@@ -82,7 +110,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador.");
                     break;
             }
-//            cerrarConexion(conexion, sentenciaPreparada);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -96,11 +124,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarRegion(int regionId) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "delete from REGIONS where REGION_ID=?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, regionId);
             registrosAfectados = sentenciaPreparada.executeUpdate();
             sentenciaPreparada.close();
@@ -115,6 +144,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -129,10 +159,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarRegion(int regionId, Region region) throws ExcepcionHR {
+        Statement sentencia = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             dml = "update regions set REGION_ID=" + region.getRegionId() + ", REGION_NAME='" + region.getRegionName() + "' where REGION_ID=" + regionId;
             registrosAfectados = sentencia.executeUpdate(dml);
             sentencia.close();
@@ -150,6 +181,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador" + ex);
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -163,11 +195,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Region leerRegion(int regionId) throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         Region r = null;
         try {
             dql = "select * from REGIONS where REGION_ID=" + regionId;
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
                 r = new Region(resultado.getInt("REGION_ID"), resultado.getString("REGION_NAME"));
@@ -182,6 +215,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return r;
@@ -194,12 +228,13 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Region> leerRegions() throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         Region r = null;
         ArrayList<Region> a = new ArrayList();
         try {
             dql = "select * from REGIONS";
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
                 r = new Region(resultado.getInt("REGION_ID"), resultado.getString("REGION_NAME"));
@@ -215,6 +250,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return a;
@@ -228,13 +264,14 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarCountry(Country country) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "INSERT INTO COUNTRIES"
                     + "(COUNTRY_ID,COUNTRY_NAME,REGION_ID) "
                     + "VALUES (?,?,?)";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setString(1, country.getCountryId());
             sentenciaPreparada.setString(2, country.getCountryName());
             sentenciaPreparada.setInt(3, country.getRegion().getRegionId());
@@ -257,6 +294,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -270,11 +308,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarCountry(String countryId) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call BORRAR_COUNTRY(?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setString(1, countryId);
             registrosAfectados = sentenciaLlamable.executeUpdate();
             sentenciaLlamable.close();
@@ -289,6 +328,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -303,11 +343,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarCountry(String countryId, Country country) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call MODIFICARCOUNTRY(?,?,?,?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setString(1, countryId);
             sentenciaLlamable.setString(2, country.getCountryId());
             sentenciaLlamable.setString(3, country.getCountryName());
@@ -334,6 +375,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -347,11 +389,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Country leerCountry(String countryId) throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         Country c = null;
         try {
             dql = ("Select * from COUNTRIES where COUNTRY_ID = '" + countryId + "'");
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
                 Region r = new Region(resultado.getInt("REGION_ID"), null);
@@ -364,6 +407,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return c;
@@ -376,13 +420,14 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Country> leerCountrys() throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         Country c = null;
         Region r = null;
         ArrayList<Country> lista = new ArrayList();
         try {
             dql = "select * from COUNTRIES";
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
                 r = new Region();
@@ -399,6 +444,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return lista;
@@ -412,11 +458,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarLocation(Location location) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "INSERT INTO LOCATIONS(LOCATION_ID,STREET_ADDRESS,POSTAL_CODE,CITY,STATE_PROVINCE,COUNTRY_ID) VALUES (?,?,?,?,?,?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setInt(1, location.getLocationId());
             sentenciaLlamable.setString(2, location.getStreetAddress());
             sentenciaLlamable.setString(3, location.getPostalCode());
@@ -442,6 +489,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -455,11 +503,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarLocation(int locationId) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "DELETE FROM LOCATIONS WHERE LOCATION_ID=?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, locationId);
             registrosAfectados = sentenciaPreparada.executeUpdate();
             sentenciaPreparada.close();
@@ -474,6 +523,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -488,11 +538,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarLocation(int locationId, Location location) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "update LOCATIONS set LOCATION_ID = ? , STREET_ADDRESS = ? , POSTAL_CODE = ? , CITY = ? ,STATE_PROVINCE = ? , COUNTRY_ID = ? where LOCATION_ID = ?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, location.getLocationId());
             sentenciaPreparada.setString(2, location.getStreetAddress());
             sentenciaPreparada.setString(3, location.getPostalCode());
@@ -522,6 +573,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -535,31 +587,49 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Location leerLocation(int locationId) throws ExcepcionHR {
-        Location location = new Location();
-        location.setCountry(new Country());
+        PreparedStatement sentenciaPreparada = null;
+        String dql = null;
+        Region region = null;
+        Country country = null;
+        Location location = null;
+        
         try {
-            String dql = "SELECT * FROM LOCATIONS WHERE LOCATION_ID=?";
-            PreparedStatement sentencia = conexion.prepareStatement(dql);
-            sentencia.setInt(1, locationId);
-            sentencia.executeQuery();
+            dql = "SELECT * " +
+                    "FROM REGIONS R, COUNTRIES C, LOCATIONS L " +
+                    "WHERE R.REGION_ID = C.REGION_ID " +
+                    "  AND C.COUNTRY_ID = L.COUNTRY_ID " +
+                    "  AND LOCATION_ID = ?";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.setInt(1, locationId);
+            sentenciaPreparada.executeQuery();
 
-            ResultSet resultado = sentencia.executeQuery(dql);
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
+                region = new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
+                country = new Country();
+                country.setCountryId(resultado.getString("COUNTRY_ID"));
+                country.setCountryName(resultado.getString("COUNTRY_NAME"));
+                country.setRegion(region);
+                location = new Location();
                 location.setLocationId(resultado.getInt("LOCATION_ID"));
                 location.setStreetAddress(resultado.getString("STREET_ADDRESS"));
                 location.setPostalCode(resultado.getString("POSTAL_CODE"));
                 location.setCity(resultado.getString("CITY"));
                 location.setStateProvince(resultado.getString("STATE_PROVINCE"));
-                location.getCountry().setCountryId(resultado.getString("COUNTRY_ID"));
+                location.setCountry(country);
             }
-
             resultado.close();
-
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
-
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return location;
@@ -572,30 +642,52 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Location> leerLocations() throws ExcepcionHR {
-        ArrayList<Location> locations = new ArrayList();
+        PreparedStatement sentenciaPreparada = null;
+        String dql = null;
+        Region region = null;
+        Country country = null;
+        Location location = null;
+        ArrayList<Location> listaLocations = new ArrayList();
+        
         try {
-            Statement sentencia = conexion.createStatement();
-            String dql = "SELECT * FROM LOCATIONS";
-            ResultSet resultado = sentencia.executeQuery(dql);
+            dql = "SELECT * " +
+                    "FROM REGIONS R, COUNTRIES C, LOCATIONS L " +
+                    "WHERE R.REGION_ID = C.REGION_ID " +
+                    "  AND C.COUNTRY_ID = L.COUNTRY_ID";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.executeQuery();
+
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                Location location = new Location();
-                location.setCountry(new Country());
+                region = new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
+                country = new Country();
+                country.setCountryId(resultado.getString("COUNTRY_ID"));
+                country.setCountryName(resultado.getString("COUNTRY_NAME"));
+                country.setRegion(region);
+                location = new Location();
                 location.setLocationId(resultado.getInt("LOCATION_ID"));
                 location.setStreetAddress(resultado.getString("STREET_ADDRESS"));
                 location.setPostalCode(resultado.getString("POSTAL_CODE"));
                 location.setCity(resultado.getString("CITY"));
                 location.setStateProvince(resultado.getString("STATE_PROVINCE"));
-                location.getCountry().setCountryId(resultado.getString("COUNTRY_ID"));
-                locations.add(location);
+                location.setCountry(country);
+                listaLocations.add(location);
             }
             resultado.close();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return locations;
+        return listaLocations;
     }
 
     /**
@@ -606,19 +698,19 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarDepartment(Department department) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
-            Statement sentencia = conexion.createStatement();
             dml = "insert into DEPARTMENTS (DEPARTMENT_ID, DEPARTMENT_NAME,MANAGER_ID,LOCATION_ID)"
                     + " values(?,?,?,?)";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, department.getDepartmentId());
             sentenciaPreparada.setString(2, department.getDepartmentName());
             sentenciaPreparada.setInt(3, department.getManager().getEmployeeId());
             sentenciaPreparada.setInt(4, department.getLocation().getLocationId());
             registrosAfectados = sentenciaPreparada.executeUpdate();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
@@ -636,6 +728,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -649,20 +742,16 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarDepartment(int departmentId) throws ExcepcionHR {
+        Statement sentencia = null;
         String dml = null;
         int registrosAfectados = -1;
         try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:xe", "HR", "kk");
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
 
             dml = "delete from departments where DEPARTMENT_ID=" + departmentId;
             registrosAfectados = sentencia.executeUpdate(dml);
             sentencia.close();
             conexion.close();
-        } catch (ClassNotFoundException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(0, ex.getMessage(), "Error - Clase no Encontrada: " + ex.getMessage(), dml);
-            throw excepcionHR;
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
             switch (ex.getErrorCode()) {
@@ -673,6 +762,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -687,10 +777,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarDepartment(int departmentId, Department department) throws ExcepcionHR {
+        Statement sentencia = null;
+        String dml = null;
         int registrosAfectados = 0;
-        String dml = "";
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
 
             dml = "update DEPARTMENTS set "
                     + "DEPARTMENT_ID = " + department.getDepartmentId() + ","
@@ -722,6 +813,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -735,12 +827,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Department leerDepartment(int departmentId) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
         Department d = new Department();
         try {
-            Statement sentencia = conexion.createStatement();
             dql = "select * from DEPARTMENTS where DEPARTMENT_ID = ?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada = conexion.prepareStatement(dql);
             sentenciaPreparada.setInt(1, departmentId);
             ResultSet resultado = sentenciaPreparada.executeQuery();
             d.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
@@ -751,7 +843,7 @@ public class HR {
             Employee e = new Employee();
             e.setEmployeeId(resultado.getInt("MANAGER_ID"));
             d.setManager(e);
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(
@@ -759,6 +851,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return d;
@@ -771,10 +864,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Department> leerDepartments() throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         ArrayList<Department> a = new ArrayList<Department>();
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             dql = "select * from DEPARTMENTS";
             ResultSet resultados = sentencia.executeQuery(dql);
             while (resultados.next()) {
@@ -797,6 +891,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return a;
@@ -810,13 +905,14 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarEmployee(Employee employee) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "INSERT INTO EMPLOYEES"
                     + "(EMPLOYEE_ID,FIRST_NAME,LAST_NAME,EMAIL,PHONE_NUMBER,HIRE_DATE,JOB_ID,SALARY,COMMISSION_PCT,MANAGER_ID,DEPARTMENT_ID) "
                     + "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, employee.getEmployeeId());
             sentenciaPreparada.setString(2, employee.getFirstName());
             sentenciaPreparada.setString(3, employee.getLastName());
@@ -850,6 +946,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -863,11 +960,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarEmployee(int employeeId) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call BORRAR_EMPLOYEE(?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setInt(1, employeeId);
             registrosAfectados = sentenciaLlamable.executeUpdate();
             sentenciaLlamable.close();
@@ -882,6 +980,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -896,10 +995,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarEmployee(int employeeId, Employee employee) throws ExcepcionHR {
+        Statement sentencia = null;
+        String dml = null;
         int registrosAfectados = 0;
-        String dml = "";
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
 
             dml = "update EMPLOYEES set "
                     + "EMPLOYEE_ID = " + employee.getEmployeeId() + ","
@@ -939,6 +1039,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -952,6 +1053,7 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Employee leerEmployee(int employeeId) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
         Employee e = new Employee();
         try {
@@ -959,7 +1061,7 @@ public class HR {
             Employee m = new Employee();
             Department d = new Department();
             dql = "SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID= ?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada = conexion.prepareStatement(dql);
             sentenciaPreparada.setInt(1, employeeId);
             ResultSet resultado = sentenciaPreparada.executeQuery();
             while (resultado.next()) {
@@ -987,6 +1089,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return e;
@@ -999,6 +1102,7 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Employee> leerEmployees() throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         ArrayList<Employee> a = new ArrayList<Employee>();
         Employee e = null;
@@ -1006,7 +1110,7 @@ public class HR {
         Job j = null;
         Department d = null;
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             dql = "select * from EMPLOYEES";
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
@@ -1047,6 +1151,7 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return a;
@@ -1071,11 +1176,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarJob(String jobId) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call BORRAR_JOB(?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setString(1, jobId);
             registrosAfectados = sentenciaLlamable.executeUpdate();
             sentenciaLlamable.close();
@@ -1090,6 +1196,7 @@ public class HR {
                     System.out.println("Error en el sistema. Consulta con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -1104,11 +1211,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarJob(String jobId, Job job) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "update JOBS set JOB_ID = ? , JOB_TITLE = ? , MIN_SALARY = ? , MAX_SALARY = ? where JOB_ID = ?";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setString(1, job.getJobId());
             sentenciaPreparada.setString(2, job.getJobTitle());
             sentenciaPreparada.setInt(3, job.getMinSalary());
@@ -1133,6 +1241,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -1146,13 +1255,14 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Job leerJob(String jobId) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
         Job j = new Job();
         try {
             dql = "select * from jobs where job_id = ? ";
-            PreparedStatement sentencia = conexion.prepareStatement(dql);
-            sentencia.setString(1, jobId);
-            ResultSet resultado = sentencia.executeQuery();
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.setString(1, jobId);
+            ResultSet resultado = sentenciaPreparada.executeQuery();
             while (resultado.next()) {
                 j.setJobId(resultado.getString("job_id"));
                 j.setJobTitle(resultado.getString("job_title"));
@@ -1160,10 +1270,11 @@ public class HR {
                 j.setMaxSalary(resultado.getInt("max_salary"));
             }
             resultado.close();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return j;
@@ -1176,12 +1287,13 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Job> leerJobs() throws ExcepcionHR {
+        Statement sentencia = null;
         Job j = null;
-        String llamada = "";
+        String llamada = null;
         ArrayList<Job> trabajos = new ArrayList();
         try {
             llamada = "select * from JOBS";
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             ResultSet rs = sentencia.executeQuery(llamada);
             while (rs.next()) {
                 j = new Job(rs.getString("JOB_ID"), rs.getString("JOB_TITLE"), rs.getInt("MIN_SALARY"), rs.getInt("MAX_SALARY"));
@@ -1197,6 +1309,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return trabajos;
@@ -1214,13 +1327,14 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int insertarJobHistory(JobHistory jobHistory) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
         String dml = null;
         int registrosAfectados = 0;
         try {
             dml = "INSERT JOB_HISTORY"
                     + "(EMPLOYEE_ID,START_DATE,END_DATE,JOB_ID,DEPARTMENT_ID) "
                     + "VALUES (?,?,?,?,?)";
-            PreparedStatement sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada = conexion.prepareStatement(dml);
             sentenciaPreparada.setInt(1, jobHistory.getEmpleado().getEmployeeId());
             sentenciaPreparada.setDate(2, jobHistory.getStartDate());
             sentenciaPreparada.setDate(3, jobHistory.getEndDate());
@@ -1248,6 +1362,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error: el identificador de empleado no puede repetirse, en el mismo dia.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
 
@@ -1266,11 +1381,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int borrarJobHistory(int employeeId, java.sql.Date startDate) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call BORRAR_JOB_HISTORY(?,?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setInt(1, employeeId);
             sentenciaLlamable.setDate(2, startDate);
             sentenciaLlamable.executeUpdate();
@@ -1284,6 +1400,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -1301,11 +1418,12 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public int modificarJobHistory(int employeeId, java.sql.Date startDate, JobHistory jobHistory) throws ExcepcionHR {
+        CallableStatement sentenciaLlamable = null;
         String llamada = null;
         int registrosAfectados = 0;
         try {
             llamada = "call MODIFICAR_JOBHISTORY(?,?,?,?,?,?,?)";
-            CallableStatement sentenciaLlamable = conexion.prepareCall(llamada);
+            sentenciaLlamable = conexion.prepareCall(llamada);
             sentenciaLlamable.setInt(1, jobHistory.getEmpleado().getEmployeeId());
             sentenciaLlamable.setDate(2, jobHistory.getStartDate());
             sentenciaLlamable.setDate(3, jobHistory.getEndDate());
@@ -1335,6 +1453,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error: inesperado, consulte con el administrador.");
                     break;
             }
+            cerrarConexion(conexion, sentenciaLlamable);
             throw excepcionHR;
         }
         return registrosAfectados;
@@ -1352,10 +1471,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         JobHistory j = new JobHistory();
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
             dql = "select * from job_history where EMPLOYEE_ID=" + employeeId + " and " + "START_DATE=" + startDate;
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
@@ -1382,6 +1502,7 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return j;
@@ -1395,10 +1516,11 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {
+        Statement sentencia = null;
         String dql = null;
         ArrayList<JobHistory> a = new ArrayList<JobHistory>();
         try {
-            Statement sentencia = conexion.createStatement();
+            sentencia = conexion.createStatement();
 
             dql = "select * from job_history";
             ResultSet resultado = sentencia.executeQuery(dql);
@@ -1422,6 +1544,7 @@ public class HR {
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador", dql);
+            cerrarConexion(conexion, sentencia);
             throw excepcionHR;
         }
         return a;

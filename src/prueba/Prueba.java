@@ -26,7 +26,17 @@ public class Prueba {
 //    /**
 //     * @param args the command line arguments
 //     */
-//    public static void main(String[] args) {
+    public static void main(String[] args) {
+        try {
+            HR hr = new HR();
+            System.out.println(hr.leerLocations());
+            
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+    }
+    
+}
 //        insertarEmployee();
 //        modificarDepartment();
 //        borrarCountry();
@@ -381,7 +391,7 @@ public class Prueba {
 //        }
 //    
 //    }
-//    
+//
 //   
 //    public static void insertarJobHistory() throws ParseException{
 //        try {
@@ -457,6 +467,3 @@ public class Prueba {
 //            System.out.println(ex);
 //        }
 //        return a;
-//    }
-//    
-}
