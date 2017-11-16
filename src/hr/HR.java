@@ -1435,7 +1435,7 @@ public class HR {
             sentenciaLlamable.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", llamada);
             switch (ex.getErrorCode()) {
                 case 2291:
                     excepcionHR.setMensajeErrorUsuario("Error: se ha producido uno de los siguientes errores:El departamento seleccionado no existe,El empleado no existe,El trabajo escogido no existe");

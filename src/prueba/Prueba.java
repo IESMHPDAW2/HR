@@ -29,7 +29,7 @@ public class Prueba {
     public static void main(String[] args) throws ParseException {
         try {
             HR hr = new HR();
-            modificarJobHistory();
+           modificarJobHistory();
             
         } catch (ExcepcionHR ex) {
             System.out.println(ex);
@@ -152,6 +152,7 @@ public class Prueba {
        
     }
     
+    
     public static void borrarLocation(){
         try {
             HR hr = new HR();
@@ -217,6 +218,14 @@ public class Prueba {
        }
     
 }
+    public static void borrarRegions() {
+        try { 
+            HR hr=new HR();
+            hr.borrarRegion(1);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+    }
     
     public static void leerJob(){
         try {
@@ -367,17 +376,17 @@ public class Prueba {
       Employee empleado= new Employee();
           empleado.setEmployeeId(104);
       Department department= new Department();
-          department.setDepartmentId(80);
+          department.setDepartmentId(90);
       Job trabajo= new Job();
-          trabajo.setJobId("SA_MAN");
+          trabajo.setJobId("AD_VP");
       SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
           java.util.Date fechaUtil = sdf.parse("25/01/17");
           java.sql.Date parametroStarDate = new java.sql.Date(fechaUtil.getTime());
 
-          java.util.Date fechasUtil1 = sdf.parse("26/01/17");
+          java.util.Date fechasUtil1 = sdf.parse("18/01/17");
           java.sql.Date startDate = new java.sql.Date(fechasUtil1.getTime());
 
-          java.util.Date fechaeUtil2 = sdf.parse("10/07/18");
+          java.util.Date fechaeUtil2 = sdf.parse("14/07/14");
           java.sql.Date endDate = new java.sql.Date(fechaeUtil2.getTime());
       JobHistory jh= new JobHistory(empleado,startDate,endDate,trabajo,department);
 
@@ -387,7 +396,7 @@ public class Prueba {
             hr.modificarJobHistory(104,parametroStarDate,jh);
             
         } catch (ExcepcionHR ex) {
-            
+            System.out.println(ex);
         }
     
     }
