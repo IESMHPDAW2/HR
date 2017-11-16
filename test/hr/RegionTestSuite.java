@@ -12,7 +12,10 @@ import org.junit.runners.Suite;
  * @author ifontecha
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({hr.region.InsertarRegionTest.class, hr.region.LeerRegionTest.class, hr.region.LeerRegionsTest.class})
+@Suite.SuiteClasses({hr.region.InsertarRegionTest.class, 
+    hr.region.BorrarRegionTest.class, 
+    hr.region.LeerRegionTest.class, 
+    hr.region.LeerRegionsTest.class})
 public class RegionTestSuite {
 
     @BeforeClass
