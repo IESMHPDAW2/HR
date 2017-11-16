@@ -1,0 +1,5 @@
+CREATE OR REPLACE PROCEDURE BORRAR_JOB(identificador_trabajo char)
+IS
+BEGIN
+    DELETE FROM JOBS WHERE JOB_ID=identificador_trabajo;
+END BORRAR_JOB;

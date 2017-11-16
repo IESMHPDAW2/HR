@@ -187,7 +187,7 @@ public class HR {
         return registrosAfectados;
     }
 
-/**
+    /**
      * Consulta una región de la base de datos
      * @author Jonathan Leon-Byron Morales
      * @param regionId Identificador de la región a consultar
@@ -195,66 +195,76 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Region leerRegion(int regionId) throws ExcepcionHR {
-        Statement sentencia = null;
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
         Region r = null;
+        Region region=null;
         try {
-            dql = "SELECT * FROM REGIONS WHERE REGION_ID=" + regionId;
-            sentencia = conexion.createStatement();
-            ResultSet resultado = sentencia.executeQuery(dql);
+            dql = "SELECT * FROM REGIONS WHERE REGION_ID=?";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.setInt(1, regionId);
+            sentenciaPreparada.executeQuery();
+            
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                r = new Region(resultado.getInt("REGION_ID"), resultado.getString("REGION_NAME"));
+                region=new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
             }
             resultado.close();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
+            
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
-            switch (ex.getErrorCode()) {
-                default:
-                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
-                    break;
-            }
-            cerrarConexion(conexion, sentencia);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return r;
+        return region;
     }
+
     /**
      * Consulta todas las regiones de la base de datos
-     * @author Jonathan León Lorenzo
+     * @author Jonathan León-Byron Morales
      * @return Lista de todas las regiones
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Region> leerRegions() throws ExcepcionHR {
-        Statement sentencia = null;
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
-        Region r = null;
+        Region region = null;
         ArrayList<Region> a = new ArrayList();
         try {
-            dql = "select * from REGIONS";
-            sentencia = conexion.createStatement();
-            ResultSet resultado = sentencia.executeQuery(dql);
+            dql = "SELECT * FROM REGIONS";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.executeQuery();            
+            
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                r = new Region(resultado.getInt("REGION_ID"), resultado.getString("REGION_NAME"));
-                a.add(r);
+                region = new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
+                a.add(region);
             }
             resultado.close();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
-            switch (ex.getErrorCode()) {
-                default:
-                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
-                    break;
-            }
-            cerrarConexion(conexion, sentencia);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
         return a;
     }
-
+    
     /**
      * Inserta un país en la base de datos
      * @author Ricardo Pérez Barreda
@@ -381,61 +391,38 @@ public class HR {
     }
 
     /**
-     * Consulta un país de la base de datos
-     * @author Ricardo Pérez Barreda
+     * Consulta un pais de la base de datos
+     * @author Ricardo Perez Barreda
      * @param countryId Identificador del pais a consultar
-     * @return País a consultar
+     * @return Pais a consultar
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Country leerCountry(String countryId) throws ExcepcionHR {
-        Statement sentencia = null;
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
-        Country c = null;
+        Country country = null;
+        Region region = null;
         try {
-            dql = ("Select * from COUNTRIES where COUNTRY_ID = '" + countryId + "'");
-            sentencia = conexion.createStatement();
-            ResultSet resultado = sentencia.executeQuery(dql);
-            while (resultado.next()) {
-                Region r = new Region(resultado.getInt("REGION_ID"), null);
-                c = new Country(resultado.getString("COUNTRY_ID"), resultado.getString("COUNTRY_NAME"), r);
-            }
-            resultado.close();
-        } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(
-                    ex.getErrorCode(),
-                    ex.getMessage(),
-                    "Error general del sistema. Consulte con el administrador",
-                    dql);
-            cerrarConexion(conexion, sentencia);
-            throw excepcionHR;
-        }
-        return c;
-    }
+            dql = "SELECT * " +
+                    "FROM COUNTRIES C, REGIONS R " +
+                    "WHERE R.REGION_ID = C.REGION_ID AND "
+                  + "COUNTRY_ID = ?";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.setString(1, countryId);
+            sentenciaPreparada.executeQuery();
 
-    /**
-     * Consulta todos los paises de la base de datos
-     * @author Ricardo Pérez Barreda
-     * @return Lista de todos los paises
-     * @throws ExcepcionHR si se produce cualquier excepcion
-     */
-    public ArrayList<Country> leerCountrys() throws ExcepcionHR {
-        Statement sentencia = null;
-        String dql = null;
-        Country c = null;
-        Region r = null;
-        ArrayList<Country> lista = new ArrayList();
-        try {
-            dql = "select * from COUNTRIES";
-            sentencia = conexion.createStatement();
-            ResultSet resultado = sentencia.executeQuery(dql);
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                r = new Region();
-                r.setRegionId(resultado.getInt("REGION_ID"));
-                c = new Country(resultado.getString("COUNTRY_ID"), resultado.getString("COUNTRY_NAME"), r);
-                lista.add(c);
+                region = new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
+                country = new Country();
+                country.setCountryId(resultado.getString("COUNTRY_ID"));
+                country.setCountryName(resultado.getString("COUNTRY_NAME"));
+                country.setRegion(region);
             }
             resultado.close();
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(
@@ -443,12 +430,57 @@ public class HR {
                     ex.getMessage(),
                     "Error general del sistema. Consulte con el administrador",
                     dql);
-            cerrarConexion(conexion, sentencia);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return lista;
+        return country;
     }
 
+    /**
+     * Consulta todos los paises de la base de datos
+     * @author Ricardo Perez Barreda
+     * @return Lista de todos los paises
+     * @throws ExcepcionHR si se produce cualquier excepcion
+     */
+    public ArrayList<Country> leerCountrys() throws ExcepcionHR {      
+        PreparedStatement sentenciaPreparada = null;
+        String dql = null;
+        Country country = null;
+        Region region = null;
+        ArrayList<Country> listaCountries = new ArrayList();
+        try {
+            dql = "SELECT * " +
+                    "FROM COUNTRIES C, REGIONS R " +
+                    "WHERE R.REGION_ID = C.REGION_ID ";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.executeQuery();
+
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
+            while (resultado.next()) {
+                region = new Region();
+                region.setRegionId(resultado.getInt("REGION_ID"));
+                region.setRegionName(resultado.getString("REGION_NAME"));
+                country = new Country();
+                country.setCountryId(resultado.getString("COUNTRY_ID"));
+                country.setCountryName(resultado.getString("COUNTRY_NAME"));
+                country.setRegion(region);
+                listaCountries.add(country);
+            }
+            resultado.close();
+            sentenciaPreparada.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(),
+                    ex.getMessage(),
+                    "Error general del sistema. Consulte con el administrador",
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
+            throw excepcionHR;
+        }
+        return listaCountries;
+    }
+    
     /**
      * Inserta una localidad en la base de datos
      * @author Carlos Labrador Amieva
@@ -1054,44 +1086,116 @@ public class HR {
     public Employee leerEmployee(int employeeId) throws ExcepcionHR {
         PreparedStatement sentenciaPreparada = null;
         String dql = null;
-        Employee e = new Employee();
+        Region region = null;
+        Country country = null;
+        Location location = null;
+        Job jobManagerDepartment = null;
+        Department department = null;
+        Employee managerDepartment = null;
+        Job jobManagerEmployee = null;
+        Employee managerEmployee = null;
+        Job job = null;
+        Employee employee = null;
+        
         try {
-            Job j = new Job();
-            Employee m = new Employee();
-            Department d = new Department();
-            dql = "SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID= ?";
+            dql = "SELECT * " +
+                    "FROM REGIONS R, COUNTRIES C, LOCATIONS L, JOBS JMD, EMPLOYEES MD, DEPARTMENTS D, JOBS JME, EMPLOYEES ME, JOBS J, EMPLOYEES E " +
+                    "WHERE R.REGION_ID(+) = C.REGION_ID " +
+                    "  AND C.COUNTRY_ID(+) = L.COUNTRY_ID " +
+                    "  AND L.LOCATION_ID(+) = D.LOCATION_ID " +
+                    "  AND D.DEPARTMENT_ID(+) = E.DEPARTMENT_ID " +
+                    "  AND MD.EMPLOYEE_ID(+) = D.MANAGER_ID " +
+                    "  AND JMD.JOB_ID(+) = MD.JOB_ID " +
+                    "  AND JME.JOB_ID(+) = ME.JOB_ID " +
+                    "  AND ME.EMPLOYEE_ID(+) = E.MANAGER_ID " +
+                    "  AND J.JOB_ID = E.JOB_ID " +
+                    "  AND E.EMPLOYEE_ID = ?";
             sentenciaPreparada = conexion.prepareStatement(dql);
             sentenciaPreparada.setInt(1, employeeId);
-            ResultSet resultado = sentenciaPreparada.executeQuery();
+            sentenciaPreparada.executeQuery();
+
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                e.setEmployeeId(resultado.getInt(1));
-                e.setFirstName(resultado.getString(2));
-                e.setLastName(resultado.getString(3));
-                e.setEmail(resultado.getString(4));
-                e.setPhoneNumber(resultado.getString(5));
-                e.setHireDate(resultado.getDate(6));
-                j.setJobId(resultado.getString(7));
-                e.setJob(j);
-                e.setSalary(resultado.getDouble(8));
-                e.setCommissionPct(resultado.getDouble(9));
-                m.setEmployeeId(resultado.getInt(10));
-                e.setManager(m);
-                d.setDepartmentId(resultado.getInt(11));
-                e.setDepartment(d);
+                region = new Region();
+                region.setRegionId(resultado.getInt(1));
+                region.setRegionName(resultado.getString(2));
+                country = new Country();
+                country.setCountryId(resultado.getString(3));
+                country.setCountryName(resultado.getString(4));
+                country.setRegion(region);
+                location = new Location();
+                location.setLocationId(resultado.getInt(6));
+                location.setStreetAddress(resultado.getString(7));
+                location.setPostalCode(resultado.getString(8));
+                location.setCity(resultado.getString(9));
+                location.setStateProvince(resultado. getString(10));
+                location.setCountry(country);
+                jobManagerDepartment=new Job();
+                jobManagerDepartment.setJobId(resultado.getString(11));
+                jobManagerDepartment.setJobTitle(resultado.getString(12));
+                jobManagerDepartment.setMinSalary(resultado.getInt(14));
+                jobManagerDepartment.setMaxSalary(resultado.getInt(15));
+                managerDepartment=new Employee();
+                managerDepartment.setEmployeeId(resultado.getInt(16));
+                managerDepartment.setFirstName(resultado.getString(17));
+                managerDepartment.setLastName(resultado.getString(18));
+                managerDepartment.setEmail(resultado.getString(19));
+                managerDepartment.setPhoneNumber(resultado.getString(20));
+                managerDepartment.setHireDate(resultado.getDate(21));
+                managerDepartment.setJob(jobManagerDepartment);
+                managerDepartment.setSalary(resultado.getDouble(23));
+                managerDepartment.setCommissionPct(resultado.getDouble(24));
+                department = new Department();
+                department.setDepartmentId(resultado.getInt(27));
+                department.setDepartmentName(resultado.getString(28));
+                department.setManager(managerDepartment);
+                department.setLocation(location);
+                jobManagerEmployee=new Job();
+                jobManagerEmployee.setJobId(resultado.getString(31));
+                jobManagerEmployee.setJobTitle(resultado.getString(32));
+                jobManagerEmployee.setMinSalary(resultado.getInt(33));
+                jobManagerEmployee.setMaxSalary(resultado.getInt(34));
+                managerEmployee=new Employee();
+                managerEmployee.setEmployeeId(resultado.getInt(35));
+                managerEmployee.setFirstName(resultado.getString(36));
+                managerEmployee.setLastName(resultado.getString(37));
+                managerEmployee.setEmail(resultado.getString(38));
+                managerEmployee.setPhoneNumber(resultado.getString(39));
+                managerEmployee.setHireDate(resultado.getDate(40));
+                managerEmployee.setJob(jobManagerEmployee);
+                managerEmployee.setSalary(resultado.getDouble(42));
+                managerEmployee.setCommissionPct(resultado.getDouble(43));
+                job=new Job();
+                job.setJobId(resultado.getString(46));
+                job.setJobTitle(resultado.getString(47));
+                job.setMinSalary(resultado.getInt(48));
+                job.setMaxSalary(resultado.getInt(49));
+                employee=new Employee();
+                employee.setEmployeeId(resultado.getInt(50));
+                employee.setFirstName(resultado.getString(51));
+                employee.setLastName(resultado.getString(52));
+                employee.setEmail(resultado.getString(53));
+                employee.setPhoneNumber(resultado.getString(54));
+                employee.setHireDate(resultado.getDate(55));
+                employee.setJob(job);
+                employee.setSalary(resultado.getDouble(57));
+                employee.setCommissionPct(resultado.getDouble(58));
+                employee.setManager(managerEmployee);
+                employee.setDepartment(department);
             }
             resultado.close();
             sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(
-                    ex.getErrorCode(),
-                    ex.getMessage(),
-                    "Error general del sistema. Consulte con el administrador",
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
                     dql);
             cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return e;
+        return employee;
     }
 
     /**
@@ -1101,59 +1205,118 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Employee> leerEmployees() throws ExcepcionHR {
-        Statement sentencia = null;
+        PreparedStatement sentenciaPreparada = null;
         String dql = null;
-        ArrayList<Employee> a = new ArrayList<Employee>();
-        Employee e = null;
-        Employee m = null;
-        Job j = null;
-        Department d = null;
+        Region region = null;
+        Country country = null;
+        Location location = null;
+        Job jobManagerDepartment = null;
+        Department department = null;
+        Employee managerDepartment = null;
+        Job jobManagerEmployee = null;
+        Employee managerEmployee = null;
+        Job job = null;
+        Employee employee = null;
+        ArrayList<Employee> listaEmployees = new ArrayList();
+        
         try {
-            sentencia = conexion.createStatement();
-            dql = "select * from EMPLOYEES";
-            ResultSet resultado = sentencia.executeQuery(dql);
+           dql = "SELECT * " +
+                    "FROM REGIONS R, COUNTRIES C, LOCATIONS L, JOBS JMD, EMPLOYEES MD, DEPARTMENTS D, JOBS JME, EMPLOYEES ME, JOBS J, EMPLOYEES E " +
+                    "WHERE R.REGION_ID(+) = C.REGION_ID " +
+                    "  AND C.COUNTRY_ID(+) = L.COUNTRY_ID " +
+                    "  AND L.LOCATION_ID(+) = D.LOCATION_ID " +
+                    "  AND D.DEPARTMENT_ID(+) = E.DEPARTMENT_ID " +
+                    "  AND MD.EMPLOYEE_ID(+) = D.MANAGER_ID " +
+                    "  AND JMD.JOB_ID(+) = MD.JOB_ID " +
+                    "  AND JME.JOB_ID(+) = ME.JOB_ID " +
+                    "  AND ME.EMPLOYEE_ID(+) = E.MANAGER_ID " +
+                    "  AND J.JOB_ID = E.JOB_ID ";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.executeQuery();
+
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                e = new Employee();
-                e.setEmployeeId(resultado.getInt("EMPLOYEE_ID"));
-                e.setFirstName(resultado.getString("FIRST_NAME"));
-                e.setLastName(resultado.getString("LAST_NAME"));
-                e.setEmail(resultado.getString("EMAIL"));
-                e.setPhoneNumber(resultado.getString("PHONE_NUMBER"));
-                e.setHireDate(resultado.getDate("HIRE_DATE"));
-                j = new Job();
-                j.setJobId(resultado.getString("JOB_ID"));
-                e.setJob(j);
-                e.setSalary(resultado.getDouble("SALARY"));
-                e.setCommissionPct(resultado.getDouble("COMMISSION_PCT"));
-
-                Employee miEmpleado = new Employee();
-                e.setEmployeeId(resultado.getInt("EMPLOYEE_ID"));
-                e.setManager(m);
-
-                d = new Department();
-                d.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
-                e.setJob(j);
-                e.setDepartment(d);
-
-                a.add(e);
-
+                region = new Region();
+                region.setRegionId(resultado.getInt(1));
+                region.setRegionName(resultado.getString(2));
+                country = new Country();
+                country.setCountryId(resultado.getString(3));
+                country.setCountryName(resultado.getString(4));
+                country.setRegion(region);
+                location = new Location();
+                location.setLocationId(resultado.getInt(6));
+                location.setStreetAddress(resultado.getString(7));
+                location.setPostalCode(resultado.getString(8));
+                location.setCity(resultado.getString(9));
+                location.setStateProvince(resultado. getString(10));
+                location.setCountry(country);
+                jobManagerDepartment=new Job();
+                jobManagerDepartment.setJobId(resultado.getString(11));
+                jobManagerDepartment.setJobTitle(resultado.getString(12));
+                jobManagerDepartment.setMinSalary(resultado.getInt(14));
+                jobManagerDepartment.setMaxSalary(resultado.getInt(15));
+                managerDepartment=new Employee();
+                managerDepartment.setEmployeeId(resultado.getInt(16));
+                managerDepartment.setFirstName(resultado.getString(17));
+                managerDepartment.setLastName(resultado.getString(18));
+                managerDepartment.setEmail(resultado.getString(19));
+                managerDepartment.setPhoneNumber(resultado.getString(20));
+                managerDepartment.setHireDate(resultado.getDate(21));
+                managerDepartment.setJob(jobManagerDepartment);
+                managerDepartment.setSalary(resultado.getDouble(23));
+                managerDepartment.setCommissionPct(resultado.getDouble(24));
+                department = new Department();
+                department.setDepartmentId(resultado.getInt(27));
+                department.setDepartmentName(resultado.getString(28));
+                department.setManager(managerDepartment);
+                department.setLocation(location);
+                jobManagerEmployee=new Job();
+                jobManagerEmployee.setJobId(resultado.getString(31));
+                jobManagerEmployee.setJobTitle(resultado.getString(32));
+                jobManagerEmployee.setMinSalary(resultado.getInt(33));
+                jobManagerEmployee.setMaxSalary(resultado.getInt(34));
+                managerEmployee=new Employee();
+                managerEmployee.setEmployeeId(resultado.getInt(35));
+                managerEmployee.setFirstName(resultado.getString(36));
+                managerEmployee.setLastName(resultado.getString(37));
+                managerEmployee.setEmail(resultado.getString(38));
+                managerEmployee.setPhoneNumber(resultado.getString(39));
+                managerEmployee.setHireDate(resultado.getDate(40));
+                managerEmployee.setJob(jobManagerEmployee);
+                managerEmployee.setSalary(resultado.getDouble(42));
+                managerEmployee.setCommissionPct(resultado.getDouble(43));
+                job=new Job();
+                job.setJobId(resultado.getString(46));
+                job.setJobTitle(resultado.getString(47));
+                job.setMinSalary(resultado.getInt(48));
+                job.setMaxSalary(resultado.getInt(49));
+                employee=new Employee();
+                employee.setEmployeeId(resultado.getInt(50));
+                employee.setFirstName(resultado.getString(51));
+                employee.setLastName(resultado.getString(52));
+                employee.setEmail(resultado.getString(53));
+                employee.setPhoneNumber(resultado.getString(54));
+                employee.setHireDate(resultado.getDate(55));
+                employee.setJob(job);
+                employee.setSalary(resultado.getDouble(57));
+                employee.setCommissionPct(resultado.getDouble(58));
+                employee.setManager(managerEmployee);
+                employee.setDepartment(department);
+                listaEmployees.add(employee);
             }
-
             resultado.close();
-
-            sentencia.close();
+            sentenciaPreparada.close();
             conexion.close();
-
         } catch (SQLException ex) {
             ExcepcionHR excepcionHR = new ExcepcionHR(
-                    ex.getErrorCode(),
-                    ex.getMessage(),
-                    "Error general del sistema. Consulte con el administrador",
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
                     dql);
-            cerrarConexion(conexion, sentencia);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return a;
+        return listaEmployees;
     }
 
     /**
@@ -1370,7 +1533,7 @@ public class HR {
         String dml = null;
         int registrosAfectados = 0;
         try {
-            dml = "INSERT JOB_HISTORY"
+            dml = "INSERT INTO JOB_HISTORY"
                     + "(EMPLOYEE_ID,START_DATE,END_DATE,JOB_ID,DEPARTMENT_ID) "
                     + "VALUES (?,?,?,?,?)";
             sentenciaPreparada = conexion.prepareStatement(dml);
@@ -1395,10 +1558,10 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error: la fecha de entrada no pude ser mayor a la de salida");
                     break;
                 case 1:
-                    excepcionHR.setMensajeErrorUsuario("El identificador de empleado y el email no pueden repetirse.");
+                    excepcionHR.setMensajeErrorUsuario("Un empleado no puede cambiar de trabajo y/o departamento en el mismo día");
                     break;
                 default:
-                    excepcionHR.setMensajeErrorUsuario("Error: el identificador de empleado no puede repetirse, en el mismo dia.");
+                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
                     break;
             }
             cerrarConexion(conexion, sentenciaPreparada);
@@ -1509,44 +1672,75 @@ public class HR {
      * consultar
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
-    public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR {
-        Statement sentencia = null;
-        String dql = null;
-        JobHistory j = new JobHistory();
-        try {
-            sentencia = conexion.createStatement();
-            dql = "select * from job_history where EMPLOYEE_ID=" + employeeId + " and " + "START_DATE=" + startDate;
-            ResultSet resultado = sentencia.executeQuery(dql);
-            while (resultado.next()) {
-                Employee e = new Employee();
-                e.setEmployeeId(employeeId);
-                j.setEmpleado(e);
-                j.setStartDate(startDate);
-                j.setEndDate(resultado.getDate("END_DATE"));
-                Job r = new Job();
-                r.setJobId(resultado.getString("JOB_ID"));
-                j.setJob(r);
-                Department a = new Department();
-                a.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
-                j.setJob(r);
-            }
-            resultado.close();
-            sentencia.close();
-            conexion.close();
-        } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql);
-            switch (ex.getErrorCode()) {
-
-                default:
-                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
-                    break;
-            }
-            cerrarConexion(conexion, sentencia);
-            throw excepcionHR;
-        }
-        return j;
-    }
-
+//    public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR, ParseException {
+//        PreparedStatement sentenciaPreparada = null;
+//        String dql = null;
+//        JobHistory jobhistory = null;
+//        Employee employee = null;
+//        Job job = null;
+//        Department department = null;
+//
+//        try {
+//            Statement sentencia = conexion.createStatement();
+//            dql = "SELECT * FROM JOB_HISTORY JH, EMPLOYEES EMD, JOBS J, DEPARTMENTS DE "
+//                    + " WHERE J.JOB_ID = JH.JOB_ID "
+//                    + " AND EMD.EMPLOYEE_ID = JH.EMPLOYEE_ID "
+//                    + " AND DE.DEPARTMENT_ID = JH.DEPARTMENT_ID"
+//                    + " AND JH.START_DATE = ? "
+//                    + " AND JH.EMPLOYEE_ID = ? ";
+//            sentenciaPreparada = conexion.prepareStatement(dql);
+//            sentenciaPreparada.setInt(1, employeeId);
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            Date fechaUtil = sdf.parse(startDate.toString());
+//            java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
+//            sentenciaPreparada.setDate(2, fechaSql);
+//            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
+//
+//            while (resultado.next()) {
+//
+//                //Employee
+//                employee = new Employee();
+//                employee.setEmployeeId(resultado.getInt("EMPLOYEE_ID"));
+//                employee.setFirstName(resultado.getString("FIRST_NAME"));
+//
+//                //Job
+//                job = new Job();
+//                job.setJobId(resultado.getString("JOB_ID"));
+//                job.setJobTitle(resultado.getString("JOB_TITLE"));
+//
+//                //Department
+//                department = new Department();
+//                department.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
+//                department.setDepartmentName(resultado.getString("DEPARTMENT_NAME"));
+//
+//                jobhistory = new JobHistory();
+//                jobhistory.setJob(job);
+//                jobhistory.setDepartment(department);
+//                jobhistory.setEmpleado(employee);
+//                jobhistory.setStartDate(resultado.getDate("START_DATE"));
+//                jobhistory.setEndDate(resultado.getDate("END_DATE"));
+//
+//            }
+//
+//            resultado.close();
+//
+//            sentencia.close();
+//            conexion.close();
+//
+//        } catch (SQLException ex) {
+//            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql);
+//            switch (ex.getErrorCode()) {
+//
+//                default:
+//                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+//                    break;
+//                    cerrarConexion(conexion, sentenciaPreparada);
+//                    throw excepcionHR;
+//            }
+//            throw excepcionHR;
+//        }
+//        return jobhistory;
+//    }
     /**
      * Consulta todos los datos históricos de trabajo y/o departamento de la
      * base de datos
@@ -1554,38 +1748,38 @@ public class HR {
      * @return Lista de todos los datos históricos
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
-    public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {
-        Statement sentencia = null;
-        String dql = null;
-        ArrayList<JobHistory> a = new ArrayList<JobHistory>();
-        try {
-            sentencia = conexion.createStatement();
-
-            dql = "select * from job_history";
-            ResultSet resultado = sentencia.executeQuery(dql);
-            while (resultado.next()) {
-                JobHistory j = new JobHistory();
-                Employee e = new Employee();
-                e.setEmployeeId(resultado.getInt("EMPLOYEE_ID"));
-                j.setEmpleado(e);
-                j.setStartDate(resultado.getDate("START_DATE"));
-                j.setEndDate(resultado.getDate("END_DATE"));
-                Job r = new Job();
-                r.setJobId(resultado.getString("JOB_ID"));
-                j.setJob(r);
-                Department d = new Department();
-                d.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
-                j.setJob(r);
-                a.add(j);
-            }
-            resultado.close();
-            sentencia.close();
-            conexion.close();
-        } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador", dql);
-            cerrarConexion(conexion, sentencia);
-            throw excepcionHR;
-        }
-        return a;
-    }
+//    public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {
+//        Statement sentencia = null;
+//        String dql = null;
+//        ArrayList<JobHistory> a = new ArrayList<JobHistory>();
+//        try {
+//            sentencia = conexion.createStatement();
+//
+//            dql = "select * from job_history";
+//            ResultSet resultado = sentencia.executeQuery(dql);
+//            while (resultado.next()) {
+//                JobHistory j = new JobHistory();
+//                Employee e = new Employee();
+//                e.setEmployeeId(resultado.getInt("EMPLOYEE_ID"));
+//                j.setEmpleado(e);
+//                j.setStartDate(resultado.getDate("START_DATE"));
+//                j.setEndDate(resultado.getDate("END_DATE"));
+//                Job r = new Job();
+//                r.setJobId(resultado.getString("JOB_ID"));
+//                j.setJob(r);
+//                Department d = new Department();
+//                d.setDepartmentId(resultado.getInt("DEPARTMENT_ID"));
+//                j.setJob(r);
+//                a.add(j);
+//            }
+//            resultado.close();
+//            sentencia.close();
+//            conexion.close();
+//        } catch (SQLException ex) {
+//            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador", dql);
+//            cerrarConexion(conexion, sentencia);
+//            throw excepcionHR;
+//        }
+//        return a;
+//    }
 }
