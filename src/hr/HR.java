@@ -187,9 +187,9 @@ public class HR {
         return registrosAfectados;
     }
 
-    /**
+/**
      * Consulta una región de la base de datos
-     * @author Alberto Martínez - Pilar Sánchez
+     * @author Jonathan Leon-Byron Morales
      * @param regionId Identificador de la región a consultar
      * @return Región a consultar
      * @throws ExcepcionHR si se produce cualquier excepcion
@@ -199,7 +199,7 @@ public class HR {
         String dql = null;
         Region r = null;
         try {
-            dql = "select * from REGIONS where REGION_ID=" + regionId;
+            dql = "SELECT * FROM REGIONS WHERE REGION_ID=" + regionId;
             sentencia = conexion.createStatement();
             ResultSet resultado = sentencia.executeQuery(dql);
             while (resultado.next()) {
@@ -220,7 +220,6 @@ public class HR {
         }
         return r;
     }
-
     /**
      * Consulta todas las regiones de la base de datos
      * @author Jonathan León Lorenzo
@@ -1164,10 +1163,39 @@ public class HR {
      * @return Cantidad de trabajos insertados
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
-    public int insertarJob(Job job) {
-        return -1;
+    public int insertarJob(Job job) throws ExcepcionHR {
+        PreparedStatement sentenciaPreparada = null;
+        String dml = null;
+        int registrosAfectados = 0;
+        try {
+            dml = "insert into jobs(job_id,job_title,min_salary,max_salary) values(?,?,?,?)";
+            sentenciaPreparada = conexion.prepareStatement(dml);
+            sentenciaPreparada.setString(1, job.getJobId());
+            sentenciaPreparada.setString(2, job.getJobTitle());
+            sentenciaPreparada.setInt(3, job.getMinSalary());
+            sentenciaPreparada.setInt(4, job.getMaxSalary());
+            registrosAfectados = sentenciaPreparada.executeUpdate();
+            sentenciaPreparada.close();
+            conexion.close();
+        } catch (SQLException ex) {
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
+            switch (ex.getErrorCode()) {
+                case 1400:
+                    excepcionHR.setMensajeErrorUsuario("El identificador del trabajo o el nombre del trabajo no puede ser nulo");
+                    break;
+                case 1:
+                    excepcionHR.setMensajeErrorUsuario("El identificador del trabajo no puede repetirse.");
+                    break;
+                default:
+                    excepcionHR.setMensajeErrorUsuario("Error en el sistema. Consulta con el administrador.");
+                    break;
+            }
+            cerrarConexion(conexion, sentenciaPreparada);
+            throw excepcionHR;
+        }
+        return registrosAfectados;
     }
-
+    
     /**
      * Elimina un trabajo de la base de datos
      * @author Alberto Martínez - Pilar Sánchez
@@ -1250,36 +1278,42 @@ public class HR {
     /**
      * Consulta un trabajo de la base de datos
      * @author Adela Verdeja
-     * @param jobId Identificado del trabajo a consultar
+     * @param jobId Identificador del trabajo a consultar
      * @return Trabajo a consultar
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public Job leerJob(String jobId) throws ExcepcionHR {
         PreparedStatement sentenciaPreparada = null;
         String dql = null;
-        Job j = new Job();
+        Job job = null;
         try {
-            dql = "select * from jobs where job_id = ? ";
+            dql = "SELECT * FROM JOBS WHERE JOB_ID = ? ";
             sentenciaPreparada = conexion.prepareStatement(dql);
             sentenciaPreparada.setString(1, jobId);
-            ResultSet resultado = sentenciaPreparada.executeQuery();
+            sentenciaPreparada.executeQuery();
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
             while (resultado.next()) {
-                j.setJobId(resultado.getString("job_id"));
-                j.setJobTitle(resultado.getString("job_title"));
-                j.setMinSalary(resultado.getInt("min_salary"));
-                j.setMaxSalary(resultado.getInt("max_salary"));
+                job = new Job();
+                job.setJobId(resultado.getString("JOB_ID"));
+                job.setJobTitle(resultado.getString("JOB_TITLE"));
+                job.setMinSalary(resultado.getInt("MIN_SALARY"));
+                job.setMaxSalary(resultado.getInt("MAX_SALARY"));
             }
             resultado.close();
             sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dql);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+			ex.getErrorCode(), 
+			ex.getMessage(), 
+			"Error General del Sistema. Consulte con el administrador", 
+			dql);
             cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return j;
+        return job;
     }
-
+    
     /**
      * Consulta todos los trabajos de la base de datos
      * @author Carlos Labrador
@@ -1287,35 +1321,40 @@ public class HR {
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
     public ArrayList<Job> leerJobs() throws ExcepcionHR {
-        Statement sentencia = null;
-        Job j = null;
-        String llamada = null;
-        ArrayList<Job> trabajos = new ArrayList();
+        PreparedStatement sentenciaPreparada = null;
+        String dql = null;
+        Job job = null;
+        ArrayList<Job> listaJobs = new ArrayList();
+        
         try {
-            llamada = "select * from JOBS";
-            sentencia = conexion.createStatement();
-            ResultSet rs = sentencia.executeQuery(llamada);
-            while (rs.next()) {
-                j = new Job(rs.getString("JOB_ID"), rs.getString("JOB_TITLE"), rs.getInt("MIN_SALARY"), rs.getInt("MAX_SALARY"));
-                trabajos.add(j);
+            dql = "select * from JOBS";
+            sentenciaPreparada = conexion.prepareStatement(dql);
+            sentenciaPreparada.executeQuery();
+
+            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
+            while (resultado.next()) {
+                job = new Job();
+                job.setJobId(resultado.getString("JOB_ID"));
+                job.setJobTitle(resultado.getString("JOB_TITLE"));
+                job.setMinSalary(resultado.getInt("MIN_SALARY"));
+                job.setMaxSalary(resultado.getInt("MAX_SALARY"));
+                listaJobs.add(job);
             }
-            rs.close();
-            sentencia.close();
+            resultado.close();
+            sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
-            switch (ex.getErrorCode()) {
-                default:
-                    excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador.");
-                    break;
-            }
-            cerrarConexion(conexion, sentencia);
+            ExcepcionHR excepcionHR = new ExcepcionHR(
+                    ex.getErrorCode(), 
+                    ex.getMessage(), 
+                    "Error general del sistema. Consulte con el administrador.", 
+                    dql);
+            cerrarConexion(conexion, sentenciaPreparada);
             throw excepcionHR;
         }
-        return trabajos;
-
+        return listaJobs;
     }
-
+    
     /**
      * Inserta un dato histórico de trabajo y/o departamento de un empleado en
      * la base de datos
