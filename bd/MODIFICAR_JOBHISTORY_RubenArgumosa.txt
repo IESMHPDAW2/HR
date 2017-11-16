@@ -1,0 +1,19 @@
+create or replace procedure MODIFICAR_JOBHISTORY(
+     p_emp_id          job_history.employee_id%type
+   , p_start_date      job_history.start_date%type
+   , p_end_date        job_history.end_date%type
+   , p_job_id          job_history.job_id%type
+   , p_department_id   job_history.department_id%type
+   , emp_id            job_history.employee_id%type
+   , st_date           job_history.start_date%type
+) 
+IS
+BEGIN
+    update JOB_HISTORY set
+        employee_id= p_emp_id , 
+        start_date=p_start_date,
+        end_date=p_end_date,
+        job_id=p_job_id,
+        department_id=p_department_id
+        WHERE employee_id=emp_id and start_date=st_date;
+END MODIFICAR_JOBHISTORY;

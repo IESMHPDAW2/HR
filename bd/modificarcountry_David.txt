@@ -1,0 +1,4 @@
+create or replace procedure modificarCountry(countryId VARCHAR2, countryNuevo VARCHAR2,nombre VARCHAR2,region number) is
+begin
+    update COUNTRIES set COUNTRY_ID=countryNuevo, COUNTRY_NAME=nombre, REGION_ID=region where COUNTRY_ID=countryId;
+end modificarCountry;

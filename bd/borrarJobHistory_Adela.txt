@@ -1,0 +1,5 @@
+create or replace PROCEDURE BORRAR_JOB_HISTORY(identificador_empleado NUMBER, fecha date)
+IS
+BEGIN
+    DELETE FROM JOB_HISTORY WHERE EMPLOYEE_ID=identificador_empleado AND START_DATE = fecha;
+END BORRAR_JOB_HISTORY;
