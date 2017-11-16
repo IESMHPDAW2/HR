@@ -1331,7 +1331,7 @@ public class HR {
         String dml = null;
         int registrosAfectados = 0;
         try {
-            dml = "INSERT JOB_HISTORY"
+            dml = "INSERT INTO JOB_HISTORY"
                     + "(EMPLOYEE_ID,START_DATE,END_DATE,JOB_ID,DEPARTMENT_ID) "
                     + "VALUES (?,?,?,?,?)";
             sentenciaPreparada = conexion.prepareStatement(dml);
@@ -1356,10 +1356,10 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error: la fecha de entrada no pude ser mayor a la de salida");
                     break;
                 case 1:
-                    excepcionHR.setMensajeErrorUsuario("El identificador de empleado y el email no pueden repetirse.");
+                    excepcionHR.setMensajeErrorUsuario("El identificador de empleado y la fecha no pueden repetirse.");
                     break;
                 default:
-                    excepcionHR.setMensajeErrorUsuario("Error: el identificador de empleado no puede repetirse, en el mismo dia.");
+                    excepcionHR.setMensajeErrorUsuario("Error inesperado."+ex.getErrorCode());
                     break;
             }
             cerrarConexion(conexion, sentenciaPreparada);
