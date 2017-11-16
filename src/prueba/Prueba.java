@@ -29,13 +29,29 @@ public class Prueba {
     public static void main(String[] args) {
         try {
             HR hr = new HR();
-            System.out.println(hr.leerLocations());
+            insertarCountry();
+
             
         } catch (ExcepcionHR ex) {
             System.out.println(ex);
         }
     }
     
+        public static void insertarCountry() {
+        Country country = new Country();
+        country.setCountryId(null);
+        country.setCountryName("Quijas City");
+        Region region=new Region();
+        region.setRegionId(1);
+        country.setRegion(region);
+
+        try {
+            HR hr = new HR();
+            hr.insertarCountry(country);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+    }
 }
 //        insertarEmployee();
 //        modificarDepartment();
