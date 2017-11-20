@@ -26,17 +26,31 @@ public class Prueba {
 //    /**
 //     * @param args the command line arguments
 //     */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         try {
-            HR hr = new HR();
-            System.out.println(hr.leerLocations());
-            
+            HR hr=new HR();
+            Employee e=new Employee();
+            e.setEmployeeId(1111);
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy");
+            java.util.Date fechaUtil = sdf.parse("15/01/01");
+            java.sql.Date starDate = new java.sql.Date(fechaUtil.getTime());
+            java.util.Date fechaeUtil2 = sdf.parse("14/07/06");
+            java.sql.Date endDate = new java.sql.Date(fechaeUtil2.getTime());
+            Job j=new Job();
+            j.setJobId("AD_ASST");
+            Department d=new Department();
+            d.setDepartmentId(80);
+            JobHistory jobHistory=new JobHistory(e, starDate , endDate, j, d);
+            hr.insertarJobHistory(jobHistory);
         } catch (ExcepcionHR ex) {
-            System.out.println(ex);
+            Logger.getLogger(Prueba.class.getName()).log(Level.SEVERE, null, ex);
         }
+          
+ 
+    
     }
     
-}
+ 
 //        insertarEmployee();
 //        modificarDepartment();
 //        borrarCountry();
@@ -414,6 +428,7 @@ public class Prueba {
 //        }
 //    
 //    }
+//}
 //    public static int insertDepartment(Department d){
 //        int i=-1;
 //        try {
@@ -467,3 +482,4 @@ public class Prueba {
 //            System.out.println(ex);
 //        }
 //        return a;
+}
