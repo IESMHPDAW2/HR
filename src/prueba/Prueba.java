@@ -235,29 +235,29 @@ public class Prueba {
             System.out.println(ex);
         }
     }
-    public static void leerjobhistiry() throws ExcepcionHR, ParseException {
-
-        HR hr = new HR();
-        Date a;
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        java.util.Date fechaUtil = sdf.parse("2001-01-13");
-        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
-
-        System.out.println(hr.leerJobHistory(60, fechaSql));
-    }
-
-    public static void leerjobhistiryS() throws ExcepcionHR {
-        HR hr = new HR();
-        ArrayList<JobHistory> miArray = new ArrayList();
-        miArray = hr.leerJobHistorys();
-        for (JobHistory o : miArray) {
-
-            System.out.println(o);
-
-        }
-
-    }
+//    public static void leerjobhistiry() throws ExcepcionHR, ParseException {
+//
+//        HR hr = new HR();
+//        Date a;
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        java.util.Date fechaUtil = sdf.parse("2001-01-13");
+//        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
+//
+//        System.out.println(hr.leerJobHistory(60, fechaSql));
+//    }
+//
+//    public static void leerjobhistiryS() throws ExcepcionHR {
+//        HR hr = new HR();
+//        ArrayList<JobHistory> miArray = new ArrayList();
+//        miArray = hr.leerJobHistorys();
+//        for (JobHistory o : miArray) {
+//
+//            System.out.println(o);
+//
+//        }
+//
+//    }
     public static void leerRegion(){
         try{
             HR hr=new HR();
