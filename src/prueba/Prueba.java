@@ -26,17 +26,44 @@ public class Prueba {
 //    /**
 //     * @param args the command line arguments
 //     */
+
     public static void main(String[] args) {
-        try {
-            HR hr = new HR();
-            System.out.println(hr.leerLocations());
-            
-        } catch (ExcepcionHR ex) {
-            System.out.println(ex);
-        }
+//        try {
+//            HR hr = new HR();
+//            System.out.println(hr.leerLocations());
+
+//        } catch (ExcepcionHR ex) {
+//            System.out.println(ex);
+//        }
+//    }
     }
-    
-}
+
+//    public static void modificarEmployees() {
+//       Employee manager = new Employee();
+//        manager.setEmployeeId(100);
+//        Department department = new Department();
+//        department.setDepartmentId(69);
+//        Job job = new Job();
+//        job.setJobId("IT_PROG");
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        java.util.Date fechaUtil = null;
+//        try {
+//            fechaUtil = sdf.parse("2017-10-19");
+//        } catch (ParseException ex) {
+//           System.out.println(ex);
+//        }
+//
+//        java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
+//        Employee e = new Employee(108,"paula","Ruiz","fghgfhgf","696121212",fechaSql, job,4500,0,manager,department);
+//       
+//        try {
+//            HR hr = new HR();
+//            hr.modificarEmployee(108,e);
+//        } catch (ExcepcionHR ex) {
+//            System.out.println(ex);
+//        }
+//    }
+//}
 //        insertarEmployee();
 //        modificarDepartment();
 //        borrarCountry();
@@ -81,7 +108,7 @@ public class Prueba {
 //        }
 //    }
 //    
-//    public static void modificarDepartment() {
+//  public static void modificarDepartment() {
 //        Employee e = new Employee();
 //        e.setEmployeeId(114);
 //        Location l = new Location();
@@ -436,17 +463,18 @@ public class Prueba {
 //        return i;
 //    }
 //    
-//        public static int borrarDepartment(int id){
-//        int i=-1;
-//        try {
-//            HR hr = new HR();
-//            i=hr.borrarDepartment(id);
-//        } catch (ExcepcionHR ex) {
-//            System.out.println(ex);
-//        }
-//        return i;
-//    }
-//    
+        public static int borrarDepartment(int id){
+        int i=-1;
+        try {
+            HR hr = new HR();
+            i=hr.borrarDepartment(id);
+        } catch (ExcepcionHR ex) {
+            System.out.println(ex);
+        }
+        return i;
+    }
+}
+    
 //    public static Department selectDepartment(int id){
 //        Department d=null;
 //        try {
