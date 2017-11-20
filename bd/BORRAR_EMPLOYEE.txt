@@ -1,0 +1,5 @@
+create or replace PROCEDURE BORRAR_EMPLOYEE(id_employee number)IS
+
+BEGIN
+    DELETE FROM EMPLOYEES WHERE EMPLOYEE_ID=id_employee;
+END BORRAR_EMPLOYEE;
