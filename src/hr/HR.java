@@ -851,6 +851,7 @@ public class HR {
     }
 
     /**
+     * 
      * Consulta un departamento de la base de datos
      * @author Ignacio Fontecha Hernández
      * @param departmentId Identificador del departmento a consultar
