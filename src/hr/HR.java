@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -851,6 +852,7 @@ public class HR {
     }
 
     /**
+     * 
      * Consulta un departamento de la base de datos
      * @author Ignacio Fontecha Hernández
      * @param departmentId Identificador del departmento a consultar
@@ -1558,10 +1560,14 @@ public class HR {
                     excepcionHR.setMensajeErrorUsuario("Error: la fecha de entrada no pude ser mayor a la de salida");
                     break;
                 case 1:
+
                     excepcionHR.setMensajeErrorUsuario("Un empleado no puede cambiar de trabajo y/o departamento en el mismo día");
+
                     break;
                 default:
+
                     excepcionHR.setMensajeErrorUsuario("Error general del sistema. Consulte con el administrador");
+
                     break;
             }
             cerrarConexion(conexion, sentenciaPreparada);
@@ -1637,7 +1643,7 @@ public class HR {
             sentenciaLlamable.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", llamada);
             switch (ex.getErrorCode()) {
                 case 2291:
                     excepcionHR.setMensajeErrorUsuario("Error: se ha producido uno de los siguientes errores:El departamento seleccionado no existe,El empleado no existe,El trabajo escogido no existe");
@@ -1672,7 +1678,7 @@ public class HR {
      * consultar
      * @throws ExcepcionHR si se produce cualquier excepcion
      */
-//    public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR, ParseException {
+//    public JobHistory leerJobHistory(int employeeId, Date startDate) throws ExcepcionHR {
 //        PreparedStatement sentenciaPreparada = null;
 //        String dql = null;
 //        JobHistory jobhistory = null;
@@ -1741,13 +1747,13 @@ public class HR {
 //        }
 //        return jobhistory;
 //    }
-    /**
-     * Consulta todos los datos históricos de trabajo y/o departamento de la
-     * base de datos
-     * @author Rodrigo Corsini
-     * @return Lista de todos los datos históricos
-     * @throws ExcepcionHR si se produce cualquier excepcion
-     */
+//    /**
+//     * Consulta todos los datos históricos de trabajo y/o departamento de la
+//     * base de datos
+//     * @author Rodrigo Corsini
+//     * @return Lista de todos los datos históricos
+//     * @throws ExcepcionHR si se produce cualquier excepcion
+//     */
 //    public ArrayList<JobHistory> leerJobHistorys() throws ExcepcionHR {
 //        Statement sentencia = null;
 //        String dql = null;

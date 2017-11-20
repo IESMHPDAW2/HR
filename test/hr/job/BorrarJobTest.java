@@ -3,25 +3,29 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hr.region;
+package hr.job;
 
+import hr.Country;
 import hr.ExcepcionHR;
 import hr.HR;
 import hr.Region;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+
 
 /**
- *Prueba el metodo borrarRegion de la HR
- * @author Byron Morales
+ * Prueba del método BorrarJob de la clase HR
+ * @author Jonathan León Lorenzo
  */
-public class BorrarRegionTest {
+public class BorrarJobTest {
     
-    public BorrarRegionTest() {
+    public BorrarJobTest() {
     }
     
     @BeforeClass
@@ -40,33 +44,34 @@ public class BorrarRegionTest {
     public void tearDown() {
     }
     
-    
     /**
      * Prueba el caso de éxito del método
      * @throws hr.ExcepcionHR
      */
     @Test
-    public void testBorrarRegionOK() throws ExcepcionHR{
-        System.out.println("norrarRegion - Caso de éxito");
+    public void testBorrarJobOK() throws ExcepcionHR {
+        System.out.println("BorrarJob - Caso de éxito");
         HR instance = new HR();
-        int expResult = 1;
-        int result = instance.borrarRegion(5);
+        int expResult = 0;
+        int result = instance.borrarJob("AAA");
         assertEquals(expResult, result);
     }
     
-    
     /**
      * Prueba la violación de la FK del método
+     * @throws hr.ExcepcionHR
      */
     @Test
-    public void testBorrarRegionViolacionFK(){    
-        System.out.println("borrarRegion - Caso de violación de FK");
+    public void testBorrarJobFK() throws ExcepcionHR {
+        System.out.println("BorrarJob - Caso de violación de FK");
         try {
-            HR hr = new HR();
-            hr.borrarRegion(2);     
+            HR instance = new HR();
+            instance.borrarJob("AC_MGR");
             fail("No se ha lanzado una ExccepcionHR");
         } catch (ExcepcionHR ex) {
-            assertEquals(ex.getCodigoErrorSistema(), 2292);
+            assertEquals(ex.getCodigoErrorSistema(),2292);
         }
     }
+    
+    
 }
