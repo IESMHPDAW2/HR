@@ -1,13 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package hr.region;
+package hr.department;
 
 import hr.ExcepcionHR;
 import hr.HR;
-import hr.Region;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -16,12 +10,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *Prueba el metodo borrarRegion de la HR
- * @author Byron Morales
+ * Prueba del método borrarDepartment de la clase HR
+ * @author Pilar Sánchez Sausa
  */
-public class BorrarRegionTest {
+public class BorrarDepartmentTest {
     
-    public BorrarRegionTest() {
+    public BorrarDepartmentTest() {
     }
     
     @BeforeClass
@@ -39,34 +33,32 @@ public class BorrarRegionTest {
     @After
     public void tearDown() {
     }
-    
-    
+
     /**
      * Prueba el caso de éxito del método
      * @throws hr.ExcepcionHR
      */
     @Test
-    public void testBorrarRegionOK() throws ExcepcionHR{
-        System.out.println("norrarRegion - Caso de éxito");
+    public void testBorrarDepartmentOK() throws ExcepcionHR {
+        System.out.println("borrarDepartment - Caso de éxito");
         HR instance = new HR();
         int expResult = 1;
-        int result = instance.borrarRegion(5);
+        int result = instance.borrarDepartment(230);
         assertEquals(expResult, result);
     }
-    
-    
+
     /**
-     * Prueba la violación de la FK del método
+     * Prueba la violación de la PK del método
      */
     @Test
-    public void testBorrarRegionViolacionFK(){    
-        System.out.println("borrarRegion - Caso de violación de FK");
+    public void testBorrarDepartmentViolacionFK() {
+        System.out.println("borrarDepartment- Caso de violación de FK de tabla hija");
         try {
-            HR hr = new HR();
-            hr.borrarRegion(2);     
+            HR instance = new HR();
+            instance.borrarDepartment(60);
             fail("No se ha lanzado una ExccepcionHR");
         } catch (ExcepcionHR ex) {
-            assertEquals(ex.getCodigoErrorSistema(), 2292);
+            assertEquals(ex.getCodigoErrorSistema(),2292);
         }
     }
 }
