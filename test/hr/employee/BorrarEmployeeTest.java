@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.employee;
 
 import hr.ExcepcionHR;
@@ -18,7 +13,6 @@ import static org.junit.Assert.*;
 
 /**
  * Prueba del método borrarEmployee de la clase HR
- *
  * @author usuario
  */
 public class BorrarEmployeeTest {
@@ -44,11 +38,11 @@ public class BorrarEmployeeTest {
 
     /**
      * Prueba el caso de exito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarEmployeeOK() throws ExcepcionHR {
-        System.out.println("borrarEmployee - Caso de exito de FK");
+        System.out.println("borrarEmployee - Caso de exito");
         try {
             HR hr = new HR();
             int expResult = 1;
@@ -60,8 +54,8 @@ public class BorrarEmployeeTest {
     }
 
     /**
-     * Prueba el caso de violacion de FK del método
-     * @throws hr.ExcepcionHR
+     * Prueba el caso de violacion de FK por el método
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarEmployeeViolacionFK() throws ExcepcionHR {

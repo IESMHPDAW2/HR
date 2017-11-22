@@ -39,7 +39,7 @@ public class ModificarDepartmentTest {
     
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testModificarDepartmentOK() throws ExcepcionHR {

@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.location;
 
 import hr.Country;
 import hr.ExcepcionHR;
 import hr.HR;
 import hr.Location;
-import hr.Region;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -18,7 +12,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Prueba del método insertarLocation de la clase HR
  * @author Tamara
  */
 public class InsertarLocationTest {
@@ -43,7 +37,7 @@ public class InsertarLocationTest {
     }
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testInsertarLocationOK() throws ExcepcionHR {
@@ -58,7 +52,7 @@ public class InsertarLocationTest {
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testInsertarLocationViolacionPK() {
@@ -75,7 +69,7 @@ public class InsertarLocationTest {
         }
     }
     /**
-     * Prueba la violación de la FK del método
+     * Prueba la violación de la FK por el método
      */
     @Test
     public void testInsertarLocationViolacionFK() {
@@ -92,7 +86,7 @@ public class InsertarLocationTest {
         }
     }
     /**
-     * Prueba la violación del NN del método
+     * Prueba la violación del NN por el método
      */
     @Test
     public void testInsertarLocationViolacionNN() {

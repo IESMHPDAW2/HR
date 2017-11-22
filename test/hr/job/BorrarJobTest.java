@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.job;
 
-import hr.Country;
 import hr.ExcepcionHR;
 import hr.HR;
-import hr.Region;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -20,7 +13,7 @@ import org.junit.Test;
 
 
 /**
- * Prueba del método BorrarJob de la clase HR
+ * Prueba del método borrarJob de la clase HR
  * @author Jonathan León Lorenzo
  */
 public class BorrarJobTest {
@@ -46,11 +39,11 @@ public class BorrarJobTest {
     
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarJobOK() throws ExcepcionHR {
-        System.out.println("BorrarJob - Caso de éxito");
+        System.out.println("borrarJob - Caso de éxito");
         HR instance = new HR();
         int expResult = 0;
         int result = instance.borrarJob("AAA");
@@ -58,12 +51,12 @@ public class BorrarJobTest {
     }
     
     /**
-     * Prueba la violación de la FK del método
+     * Prueba la violación de la FK por el método
      * @throws hr.ExcepcionHR
      */
     @Test
     public void testBorrarJobFK() throws ExcepcionHR {
-        System.out.println("BorrarJob - Caso de violación de FK");
+        System.out.println("borrarJob - Caso de violación de FK");
         try {
             HR instance = new HR();
             instance.borrarJob("AC_MGR");

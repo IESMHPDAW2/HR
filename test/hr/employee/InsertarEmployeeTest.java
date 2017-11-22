@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.employee;
 
 import hr.Department;
@@ -46,6 +41,9 @@ public class InsertarEmployeeTest {
 
     /**
      * Prueba el caso de éxito del método
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarEmployeeOK() throws ExcepcionHR, ParseException {
@@ -72,7 +70,10 @@ public class InsertarEmployeeTest {
     }
     
     /**
-     * Prueba de la violacion de PK del metodo
+     * Prueba de la violacion de PK por el metodo
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarEmployeeViolacionPK() throws ExcepcionHR, ParseException {
@@ -102,7 +103,10 @@ public class InsertarEmployeeTest {
     }    
     
     /**
-     * Prueba de la violacion de la FK del metodo
+     * Prueba de la violacion de la FK por el metodo
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarEmployeeViolacionFK() throws ExcepcionHR, ParseException {
@@ -132,7 +136,10 @@ public class InsertarEmployeeTest {
     }
     
     /**
-     * Prueba de la violacion de NN del metodo
+     * Prueba de la violacion de NN por el metodo
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarEmployeeViolacionNN() throws ExcepcionHR, ParseException {
@@ -162,7 +169,10 @@ public class InsertarEmployeeTest {
     }
     
     /**
-     * Prueba de la violacion de CK del metodo
+     * Prueba de la violacion de CK por el metodo
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarEmployeeViolacionCK() throws ExcepcionHR, ParseException {
@@ -190,6 +200,4 @@ public class InsertarEmployeeTest {
             assertEquals(ex.getCodigoErrorSistema(),2290);
         }
     }
-    
-
 }

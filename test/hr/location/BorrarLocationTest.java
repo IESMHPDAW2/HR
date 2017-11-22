@@ -36,7 +36,7 @@ public class BorrarLocationTest {
     
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarLocationOK() throws ExcepcionHR {
@@ -48,11 +48,11 @@ public class BorrarLocationTest {
     }
     
      /**
-     * Prueba la violación de la FK de tabla hija del método
+     * Prueba la violación de la FK por el método
      */
     @Test
-    public void testBorrarLocationViolacionFKHija() {
-        System.out.println("borrarLocation - Caso de violación de FK de tabla hija");
+    public void testBorrarLocationViolacionFK() {
+        System.out.println("borrarLocation - Caso de violación de FK");
         try {
             HR instance = new HR();
             instance.borrarLocation(1700);

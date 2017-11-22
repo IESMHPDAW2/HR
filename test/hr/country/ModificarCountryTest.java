@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.country;
 
 import hr.Country;
@@ -18,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Prueba del método ModificarCountry de la clase HR
+ * Prueba del método modificarCountry de la clase HR
  * @author Jonathan León Lorenzo
  */
 public class ModificarCountryTest {
@@ -44,7 +39,7 @@ public class ModificarCountryTest {
     
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testModificarCountryOK() throws ExcepcionHR {
@@ -59,7 +54,7 @@ public class ModificarCountryTest {
     }
     
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testModificarCountryPK() throws ExcepcionHR {
@@ -77,7 +72,7 @@ public class ModificarCountryTest {
     }
     
     /**
-     * Prueba la violación de la FK del método
+     * Prueba la violación de la FK por el método
      */
     @Test
     public void testModificarCountryFK() throws ExcepcionHR {

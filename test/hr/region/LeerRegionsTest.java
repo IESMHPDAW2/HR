@@ -1,5 +1,6 @@
 package hr.region;
 
+import hr.ExcepcionHR;
 import hr.HR;
 import hr.Region;
 import java.util.ArrayList;
@@ -37,9 +38,10 @@ public class LeerRegionsTest {
 
     /**
      * Test of leerRegions method, of class HR.
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
-    public void testLeerRegions() throws Exception {
+    public void testLeerRegions() throws ExcepcionHR {
         System.out.println("leerRegions");
         HR instance = new HR();
         ArrayList<Region> result = instance.leerRegions();

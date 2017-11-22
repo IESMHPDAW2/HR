@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
 
 /**
  * Prueba del método insertarJobHistory de la clase HR
- *
  * @author Pilar Sánchez Sausa
  */
 public class InsertarJobHistoryTest {
@@ -43,12 +42,13 @@ public class InsertarJobHistoryTest {
 
     /**
      * Prueba el caso de éxito del método
-     *
-     * @throws hr.ExcepcionHR
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testInsertarJobHistoryOK() throws ExcepcionHR, ParseException {
-        System.out.println("insertarRegion - Caso de éxito");
+        System.out.println("insertarJobHistory - Caso de éxito");
 
         Employee e = new Employee();
         e.setEmployeeId(149);
@@ -69,7 +69,7 @@ public class InsertarJobHistoryTest {
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testInsertarRegionViolacionPK() throws ParseException {
@@ -83,7 +83,6 @@ public class InsertarJobHistoryTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         java.util.Date fechaUtil = sdf.parse("1995-09-17");
         java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
-
         java.util.Date fechaUtilf = sdf.parse("2017-11-07");
         java.sql.Date fechaSqlf = new java.sql.Date(fechaUtilf.getTime());
         JobHistory jh = new JobHistory(e, fechaSql, fechaSqlf, j, d);
@@ -95,8 +94,9 @@ public class InsertarJobHistoryTest {
             assertEquals(ex.getCodigoErrorSistema(), 1);
         }
     }
+    
      /**
-     * Prueba la violación de la NN del método
+     * Prueba la violación de la NN por el método
      */
     @Test
     public void testInsertarRegionViolacionNN() throws ParseException {
@@ -111,7 +111,6 @@ public class InsertarJobHistoryTest {
         java.util.Date fechaUtil = sdf.parse("1995-09-17");
         java.sql.Date fechaSqlf=null;
         java.sql.Date fechaSql = new java.sql.Date(fechaUtil.getTime());
-
         JobHistory jh = new JobHistory(e, fechaSql, fechaSqlf, j, d);
         try {
             HR instance = new HR();

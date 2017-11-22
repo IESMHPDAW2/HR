@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.region;
 
 import hr.ExcepcionHR;
@@ -42,7 +37,7 @@ public class LeerRegionTest {
 
     /**
      * Test of insertarRegion method, of class HR.
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testleerRegion() throws ExcepcionHR {

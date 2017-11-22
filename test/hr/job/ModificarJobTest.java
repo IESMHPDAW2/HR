@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.job;
 
 import hr.ExcepcionHR;
@@ -16,7 +11,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Prueba del metodo ModificarJob de la clase HR
+ * Prueba del metodo modificarJob de la clase HR
  * @author Ricardo
  */
 public class ModificarJobTest {
@@ -42,6 +37,7 @@ public class ModificarJobTest {
 
     /**
      * Prueba el caso de éxito del método
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testMoficarJobOK() throws ExcepcionHR {
@@ -54,7 +50,7 @@ public class ModificarJobTest {
     }
     
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testModificarJobViolacionPK() {
@@ -70,7 +66,7 @@ public class ModificarJobTest {
     }
     
     /**
-     * Prueba la violación de NN del método
+     * Prueba la violación de NN por el método
      */
     @Test
     public void testModificarJobViolacionNotNull() {
@@ -86,7 +82,7 @@ public class ModificarJobTest {
     }
     
     /**
-     * Prueba la violación de FK del método
+     * Prueba la violación de FK por el método
      */
     @Test
     public void testModificarJobViolacionFK() {

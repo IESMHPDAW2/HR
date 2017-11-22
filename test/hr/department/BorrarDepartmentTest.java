@@ -36,7 +36,7 @@ public class BorrarDepartmentTest {
 
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarDepartmentOK() throws ExcepcionHR {
@@ -48,11 +48,11 @@ public class BorrarDepartmentTest {
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testBorrarDepartmentViolacionFK() {
-        System.out.println("borrarDepartment- Caso de violación de FK de tabla hija");
+        System.out.println("borrarDepartment- Caso de violación de FK");
         try {
             HR instance = new HR();
             instance.borrarDepartment(60);

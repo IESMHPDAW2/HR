@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.job;
 
 import hr.ExcepcionHR;
@@ -42,7 +37,7 @@ public class InsertarJobTest {
 
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testInsertarJobOK() throws ExcepcionHR {
@@ -55,7 +50,7 @@ public class InsertarJobTest {
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testInsertarJobViolacionPK() {
@@ -71,7 +66,7 @@ public class InsertarJobTest {
     }
     
     /**
-     * Prueba la restrición del NN del método
+     * Prueba la restrición del NN por el método
      */
     @Test
     public void testInsertarJobViolacionNN() {

@@ -6,7 +6,6 @@ import hr.ExcepcionHR;
 import hr.HR;
 import hr.Job;
 import hr.JobHistory;
-import hr.Location;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.junit.After;
@@ -18,7 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Prueba del método modificarJobHistory de la clase HR
  * @author David Fernandez Garcia
  */
 public class ModificarJobHistoryTest {
@@ -44,7 +43,9 @@ public class ModificarJobHistoryTest {
     
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws java.text.ParseException si se produce una excapción relacionada 
+     * con el formato de fechas 
+     * @throws ExcepcionHR si se produce cualquier otra excepcion
      */
     @Test
     public void testModificarJobHistoryOK() throws ExcepcionHR, ParseException {
@@ -79,7 +80,7 @@ public class ModificarJobHistoryTest {
     }
     
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testModificarJobHistoryViolacionPK() throws ParseException {
@@ -117,7 +118,7 @@ public class ModificarJobHistoryTest {
     }
 
      /**
-     * Prueba la violacion de FK del metodo
+     * Prueba la violacion de FK por el metodo
      */
     @Test
     public void testModificarJobHistoryViolacionFK() throws ParseException {
@@ -153,7 +154,7 @@ public class ModificarJobHistoryTest {
     }
     
     /**
-     * Prueba la violacion de fecha del metodo
+     * Prueba la violacion de fecha por el metodo
      */
     @Test
     public void testModificarJobHistoryViolacionFecha() throws ParseException {

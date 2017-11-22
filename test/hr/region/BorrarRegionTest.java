@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.region;
 
 import hr.ExcepcionHR;
@@ -16,7 +11,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *Prueba el metodo borrarRegion de la HR
+ * Prueba el metodo borrarRegion de la HR
  * @author Byron Morales
  */
 public class BorrarRegionTest {
@@ -40,14 +35,13 @@ public class BorrarRegionTest {
     public void tearDown() {
     }
     
-    
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testBorrarRegionOK() throws ExcepcionHR{
-        System.out.println("norrarRegion - Caso de éxito");
+        System.out.println("borrarRegion - Caso de éxito");
         HR instance = new HR();
         int expResult = 1;
         int result = instance.borrarRegion(5);
@@ -56,7 +50,7 @@ public class BorrarRegionTest {
     
     
     /**
-     * Prueba la violación de la FK del método
+     * Prueba la violación de la FK por el método
      */
     @Test
     public void testBorrarRegionViolacionFK(){    

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.region;
 
 import hr.ExcepcionHR;
@@ -42,7 +37,7 @@ public class ModificarRegionTest {
 
      /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testModificarRegionOK() throws ExcepcionHR {
@@ -55,7 +50,7 @@ public class ModificarRegionTest {
     }
     
     /**
-     * Prueba el caso de Violacion de Primary Key del método
+     * Prueba el caso de Violacion de Primary Key por el método
      * @throws hr.ExcepcionHR
      */
     @Test
@@ -69,7 +64,7 @@ public class ModificarRegionTest {
     }
     
       /**
-     * Prueba el caso de Violacion de FK del método
+     * Prueba el caso de Violacion de FK por el método
      * @throws hr.ExcepcionHR
      */
     
@@ -82,12 +77,4 @@ public class ModificarRegionTest {
         int result = instance.modificarRegion(1, region);
         assertEquals(expResult, result);
     }
-    
-        
-   
-    
-
-  
-    
-    
 }

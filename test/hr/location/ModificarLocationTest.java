@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hr.location;
 
 import hr.Country;
 import hr.ExcepcionHR;
 import hr.HR;
-import hr.Region;
 import hr.Location;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -19,15 +13,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Prueba del método modificarLocation de la clase HR
  * @author Ruben Argumosa
  */
 public class ModificarLocationTest {
     public ModificarLocationTest(){
-    
     }
     
-      @BeforeClass
+    @BeforeClass
     public static void setUpClass() {
     }
     
@@ -45,23 +38,23 @@ public class ModificarLocationTest {
 
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
-    public void testModificarLocationsOK() throws ExcepcionHR {
-        System.out.println("ModificarLocations - Caso de éxito");
+    public void testModificarLocationOK() throws ExcepcionHR {
+        System.out.println("modificarLocation - Caso de éxito");
         Country country = new Country();
         country.setCountryId("AU");
         Location location=new Location(1000,"Calle pepin del rio Gatoo","39300","Torrelavega","",country);
         
         HR instance = new HR();
         int expResult = 1;
-       int result = instance.modificarLocation(1000, location);
-       assertEquals(expResult, result);
+        int result = instance.modificarLocation(1000, location);
+        assertEquals(expResult, result);
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void modificarLocationViolacionPK() {
@@ -79,7 +72,7 @@ public class ModificarLocationTest {
     }
     
     /**
-     * Prueba la violación de la FKPadre del método
+     * Prueba la violación de la FKPadre por el método
      */
     @Test
     public void modificarLocationViolacionFKPadre() {
@@ -97,7 +90,7 @@ public class ModificarLocationTest {
     }
     
     /**
-     * Prueba la violación de la FKHija del método
+     * Prueba la violación de la FKHija por el método
      */
     @Test
     public void modificarLocationViolacionFKHija() {
@@ -115,7 +108,7 @@ public class ModificarLocationTest {
     }
     
     /**
-     * Prueba la violación de la NN del método
+     * Prueba la violación de la NN por el método
      */
     @Test
     public void modificarLocationViolacionNN() {

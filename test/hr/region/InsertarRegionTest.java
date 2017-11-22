@@ -37,7 +37,7 @@ public class InsertarRegionTest {
 
     /**
      * Prueba el caso de éxito del método
-     * @throws hr.ExcepcionHR
+     * @throws ExcepcionHR si se produce cualquier excepcion
      */
     @Test
     public void testInsertarRegionOK() throws ExcepcionHR {
@@ -50,7 +50,7 @@ public class InsertarRegionTest {
     }
 
     /**
-     * Prueba la violación de la PK del método
+     * Prueba la violación de la PK por el método
      */
     @Test
     public void testInsertarRegionViolacionPK() {
