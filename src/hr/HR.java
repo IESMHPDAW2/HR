@@ -136,7 +136,7 @@ public class HR {
             sentenciaPreparada.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
             switch (ex.getErrorCode()) {
                 case 2292:
                     excepcionHR.setMensajeErrorUsuario("No se puede eliminar esta region porque tiene paises asociados");
@@ -170,7 +170,7 @@ public class HR {
             sentencia.close();
             conexion.close();
         } catch (SQLException ex) {
-            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), "Error general del sistema. Consulte con el administrador.", null);
+            ExcepcionHR excepcionHR = new ExcepcionHR(ex.getErrorCode(), ex.getMessage(), null, dml);
             switch (ex.getErrorCode()) {
                 case 2292:
                     excepcionHR.setMensajeErrorUsuario("No se puede modificar el codigo del continente mientras tenga paises asociados.");
@@ -635,7 +635,7 @@ public class HR {
             sentenciaPreparada.setInt(1, locationId);
             sentenciaPreparada.executeQuery();
 
-            ResultSet resultado = sentenciaPreparada.executeQuery(dql);
+            ResultSet resultado = sentenciaPreparada.executeQuery();
             while (resultado.next()) {
                 region = new Region();
                 region.setRegionId(resultado.getInt("REGION_ID"));
